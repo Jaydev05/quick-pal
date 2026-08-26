@@ -516,7 +516,7 @@ function ApplicationsAdmin() {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState<string>("all");
 
-  const { data } = useQuery({
+  const { data, error, isLoading } = useQuery({
     queryKey: ["admin-applications"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -526,6 +526,7 @@ function ApplicationsAdmin() {
       if (error) throw error;
       return data;
     },
+    refetchInterval: 10000,
   });
 
   const setStatus = useMutation({
@@ -590,6 +591,18 @@ function ApplicationsAdmin() {
           <Download /> Export
         </Button>
       </div>
+
+      {isLoading && (
+        <p className="rounded-xl border border-border p-4 text-sm text-muted-foreground">
+          Loading applications…
+        </p>
+      )}
+
+      {error && (
+        <p className="rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+          Could not load applications: {error.message}
+        </p>
+      )}
 
       <div className="overflow-x-auto rounded-xl border border-border">
         <table className="w-full min-w-[800px] text-sm">

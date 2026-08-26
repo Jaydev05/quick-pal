@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
-import { Instagram, Mail, MapPin, Phone, Clock, Send } from "lucide-react";
+import { Clock, Instagram, Linkedin, Mail, MapPin, MessageCircle, Phone, Send } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { PublicShell } from "@/components/layout/PublicShell";
@@ -185,6 +185,16 @@ function ContactPage() {
                 Chat on WhatsApp
               </a>
             </InfoCard>
+            <InfoCard icon={<MessageCircle className="size-5 text-gold" />} title="WhatsApp">
+              <a
+                href={whatsappLink("Hello Jaydev Associates, I have an enquiry.")}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="hover:text-gold"
+              >
+                WhatsApp {COMPANY.phone}
+              </a>
+            </InfoCard>
             <InfoCard icon={<Mail className="size-5 text-gold" />} title="Email">
               <a href={COMPANY.emailHref} className="break-all hover:text-gold">
                 {COMPANY.email}
@@ -205,6 +215,16 @@ function ContactPage() {
                 className="hover:text-gold"
               >
                 @jaydev.associates
+              </a>
+            </InfoCard>
+            <InfoCard icon={<Linkedin className="size-5 text-gold" />} title="LinkedIn">
+              <a
+                href={COMPANY.linkedin}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="hover:text-gold"
+              >
+                Jaydev Associates
               </a>
             </InfoCard>
             <div className="overflow-hidden rounded-xl border border-border">

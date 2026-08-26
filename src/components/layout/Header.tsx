@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, Phone, User2, LayoutDashboard, LogOut, ShieldCheck } from "lucide-react";
+import {
+  Instagram,
+  LayoutDashboard,
+  Linkedin,
+  LogOut,
+  Menu,
+  MessageCircle,
+  Phone,
+  ShieldCheck,
+  User2,
+} from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -12,7 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
-import { COMPANY } from "@/lib/site";
+import { COMPANY, whatsappLink } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -54,6 +64,28 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <div className="hidden items-center gap-1 md:flex">
+            <Button asChild variant="ghost" size="icon" aria-label="Chat on WhatsApp">
+              <a
+                href={whatsappLink("Hello Jaydev Associates, I would like to know more.")}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                <MessageCircle />
+              </a>
+            </Button>
+            <Button asChild variant="ghost" size="icon" aria-label="Open Instagram">
+              <a href={COMPANY.instagram} target="_blank" rel="noreferrer noopener">
+                <Instagram />
+              </a>
+            </Button>
+            <Button asChild variant="ghost" size="icon" aria-label="Open LinkedIn">
+              <a href={COMPANY.linkedin} target="_blank" rel="noreferrer noopener">
+                <Linkedin />
+              </a>
+            </Button>
+          </div>
+
           <Button asChild variant="ghost" size="sm" className="hidden xl:inline-flex">
             <a href={COMPANY.phoneHref}>
               <Phone /> {COMPANY.phone}
@@ -130,6 +162,27 @@ export function Header() {
                 ))}
               </nav>
               <div className="mt-auto flex flex-col gap-2 px-5 pb-6">
+                <div className="flex items-center justify-center gap-2 py-2">
+                  <Button asChild variant="ghost" size="icon" aria-label="Chat on WhatsApp">
+                    <a
+                      href={whatsappLink("Hello Jaydev Associates, I would like to know more.")}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      <MessageCircle />
+                    </a>
+                  </Button>
+                  <Button asChild variant="ghost" size="icon" aria-label="Open Instagram">
+                    <a href={COMPANY.instagram} target="_blank" rel="noreferrer noopener">
+                      <Instagram />
+                    </a>
+                  </Button>
+                  <Button asChild variant="ghost" size="icon" aria-label="Open LinkedIn">
+                    <a href={COMPANY.linkedin} target="_blank" rel="noreferrer noopener">
+                      <Linkedin />
+                    </a>
+                  </Button>
+                </div>
                 <Button asChild onClick={() => setOpen(false)}>
                   <Link to="/jobs">Find Jobs</Link>
                 </Button>
