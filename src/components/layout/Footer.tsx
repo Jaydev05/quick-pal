@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { Instagram, Mail, MapPin, Phone } from "lucide-react";
+import { Instagram, Linkedin, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
-import { COMPANY, SERVICES } from "@/lib/site";
+import { COMPANY, SERVICES, whatsappLink } from "@/lib/site";
 
 export function Footer() {
   return (
@@ -37,6 +37,28 @@ export function Footer() {
                 className="hover:text-foreground"
               >
                 @jaydev.associates
+              </a>
+            </p>
+            <p className="flex items-center gap-2">
+              <Linkedin className="size-4 shrink-0 text-gold" />
+              <a
+                href={COMPANY.linkedin}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="hover:text-foreground"
+              >
+                Jaydev Associates
+              </a>
+            </p>
+            <p className="flex items-center gap-2">
+              <MessageCircle className="size-4 shrink-0 text-gold" />
+              <a
+                href={whatsappLink("Hello Jaydev Associates, I would like to know more.")}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="hover:text-foreground"
+              >
+                WhatsApp {COMPANY.phone}
               </a>
             </p>
           </div>

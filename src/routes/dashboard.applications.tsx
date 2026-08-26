@@ -22,6 +22,20 @@ import {
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/applications")({
+  head: () => ({
+    meta: [
+      { title: "My Applications | Jaydev Associates" },
+      {
+        name: "description",
+        content: "Track Jaydev Associates job applications and live hiring status updates.",
+      },
+      { property: "og:title", content: "My Applications | Jaydev Associates" },
+      { property: "og:description", content: "Track your Jaydev Associates applications." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: MyApplications,
 });
 

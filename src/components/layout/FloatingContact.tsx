@@ -8,7 +8,7 @@ export function FloatingContact() {
         href={whatsappLink("Hello Jaydev Associates, I would like to know more.")}
         target="_blank"
         rel="noreferrer noopener"
-        aria-label="Chat on WhatsApp"
+        aria-label={`Chat on WhatsApp ${COMPANY.phone}`}
         className="flex size-12 items-center justify-center rounded-full bg-success text-success-foreground shadow-card transition-transform hover:scale-105"
       >
         <svg viewBox="0 0 24 24" className="size-6" fill="currentColor" aria-hidden="true">

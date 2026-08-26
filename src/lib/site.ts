@@ -17,12 +17,31 @@ export const COMPANY = {
     { days: "Saturday", time: "9:00 AM – 6:00 PM" },
     { days: "Sunday", time: "Closed" },
   ],
-  instagram: "https://www.instagram.com/jaydev.associates/",
+  instagram: "https://www.instagram.com/jaydev.associates?igsi=MWhhcTZ6Y3M5MHkxdA==",
+  linkedin: "https://www.linkedin.com/company/jaydev-associates/",
 } as const;
 
 export function whatsappLink(message: string) {
-  return `https://wa.me/${COMPANY.whatsappNumber}?text=${encodeURIComponent(message)}`;
+  return `https://api.whatsapp.com/send?phone=${COMPANY.whatsappNumber}&text=${encodeURIComponent(message)}`;
 }
+
+export const SOCIAL_LINKS = [
+  {
+    label: "WhatsApp",
+    href: whatsappLink("Hello Jaydev Associates, I would like to know more."),
+    handle: COMPANY.phone,
+  },
+  {
+    label: "Instagram",
+    href: COMPANY.instagram,
+    handle: "@jaydev.associates",
+  },
+  {
+    label: "LinkedIn",
+    href: COMPANY.linkedin,
+    handle: "Jaydev Associates",
+  },
+] as const;
 
 export const SERVICES = [
   {

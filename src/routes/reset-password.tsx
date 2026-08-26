@@ -18,6 +18,8 @@ export const Route = createFileRoute("/reset-password")({
       },
       { property: "og:title", content: "Reset Password | Jaydev Associates" },
       { property: "og:description", content: "Choose a new password for your candidate account." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),

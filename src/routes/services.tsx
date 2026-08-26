@@ -20,6 +20,8 @@ export const Route = createFileRoute("/services")({
         content:
           "Five service verticals covering hiring, security, facilities, technology and property.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ServicesPage,
