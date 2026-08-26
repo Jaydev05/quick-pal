@@ -12,7 +12,8 @@ export function Logo({ className, height = 40 }: { className?: string; height?: 
         style={{ height }}
         className="w-auto"
         width={900}
-        height={464}
+        height={452}
+
 
       />
     </Link>
