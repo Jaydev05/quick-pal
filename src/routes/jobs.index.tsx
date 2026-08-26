@@ -55,6 +55,8 @@ export const Route = createFileRoute("/jobs/")({
         property: "og:description",
         content: "Search and apply for live vacancies with Jaydev Associates.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: JobsPage,

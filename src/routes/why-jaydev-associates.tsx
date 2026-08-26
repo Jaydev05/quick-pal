@@ -19,6 +19,8 @@ export const Route = createFileRoute("/why-jaydev-associates")({
         property: "og:description",
         content: "Six reasons businesses partner with Jaydev Associates.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: WhyPage,

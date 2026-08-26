@@ -14,6 +14,8 @@ export const Route = createFileRoute("/dashboard")({
       },
       { property: "og:title", content: "Candidate Dashboard | Jaydev Associates" },
       { property: "og:description", content: "Your Jaydev Associates candidate portal." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),

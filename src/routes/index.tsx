@@ -33,6 +33,8 @@ export const Route = createFileRoute("/")({
         content:
           "Multi-domain business services: recruitment, security, facility management, IT solutions and real estate.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: HomePage,

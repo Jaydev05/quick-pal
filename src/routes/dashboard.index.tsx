@@ -10,6 +10,20 @@ import { formatDate, relativeDate } from "@/lib/format";
 import type { ApplicationStatus } from "@/lib/status";
 
 export const Route = createFileRoute("/dashboard/")({
+  head: () => ({
+    meta: [
+      { title: "Candidate Overview | Jaydev Associates" },
+      {
+        name: "description",
+        content: "View recent applications, saved jobs and candidate updates with Jaydev Associates.",
+      },
+      { property: "og:title", content: "Candidate Overview | Jaydev Associates" },
+      { property: "og:description", content: "Your Jaydev Associates candidate overview." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: DashboardOverview,
 });
 

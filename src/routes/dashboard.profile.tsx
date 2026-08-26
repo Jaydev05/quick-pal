@@ -14,6 +14,20 @@ import { fetchMyProfile } from "@/lib/api";
 import { formatDate } from "@/lib/format";
 
 export const Route = createFileRoute("/dashboard/profile")({
+  head: () => ({
+    meta: [
+      { title: "My Profile | Jaydev Associates" },
+      {
+        name: "description",
+        content: "Manage your Jaydev Associates candidate profile, resume and job preferences.",
+      },
+      { property: "og:title", content: "My Profile | Jaydev Associates" },
+      { property: "og:description", content: "Manage your Jaydev Associates candidate profile." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: ProfilePage,
 });
 

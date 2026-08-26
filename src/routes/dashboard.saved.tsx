@@ -10,6 +10,20 @@ import { useAuth } from "@/hooks/useAuth";
 import { fetchSavedJobs, type JobWithCategory } from "@/lib/api";
 
 export const Route = createFileRoute("/dashboard/saved")({
+  head: () => ({
+    meta: [
+      { title: "Saved Jobs | Jaydev Associates" },
+      {
+        name: "description",
+        content: "Review job openings saved in your Jaydev Associates candidate account.",
+      },
+      { property: "og:title", content: "Saved Jobs | Jaydev Associates" },
+      { property: "og:description", content: "Your saved Jaydev Associates job openings." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: SavedJobsPage,
 });
 

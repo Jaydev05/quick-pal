@@ -46,6 +46,8 @@ export const Route = createFileRoute("/admin")({
       { name: "description", content: "Manage jobs, applications and enquiries." },
       { property: "og:title", content: "Admin Panel | Jaydev Associates" },
       { property: "og:description", content: "Internal recruitment management console." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),
