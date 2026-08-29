@@ -77,6 +77,10 @@ function LoginPage() {
     });
     setBusy(false);
     if (error) {
+      if (error.code === "email_not_confirmed") {
+        toast.error("Please confirm your email using the link we sent, then sign in.");
+        return;
+      }
       toast.error("Invalid email or password");
       return;
     }
