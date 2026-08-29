@@ -55,7 +55,7 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminPage() {
-  const { user, loading, isStaff, isAdmin, signOut } = useAuth();
+  const { user, loading, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -70,7 +70,7 @@ function AdminPage() {
     );
   }
 
-  if (!isStaff) {
+  if (!isAdmin) {
     return (
       <div className="surface-dark flex min-h-screen flex-col items-center justify-center gap-4 bg-background p-6 text-center">
         <h1 className="font-display text-2xl font-bold text-foreground">Admin sign-in required</h1>
@@ -98,7 +98,7 @@ function AdminPage() {
         { to: "/admin", label: "Console", icon: Briefcase },
         { to: "/dashboard", label: "My candidate view", icon: Users },
       ]}
-      title={isAdmin ? "Admin Panel" : "Recruiter Panel"}
+      title="Admin Panel"
     >
       <PageHeader
         title="Recruitment console"
@@ -521,12 +521,23 @@ function ApplicationsAdmin() {
   const { data, error, isLoading } = useQuery({
     queryKey: ["admin-applications"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: applications, error } = await supabase
         .from("applications")
-        .select("*, jobs(title, job_code), profiles(full_name, phone, email)")
+        .select("*, jobs(title, job_code)")
         .order("applied_at", { ascending: false });
       if (error) throw error;
-      return data;
+      const candidateIds = [...new Set((applications ?? []).map((application) => application.candidate_id))];
+      if (candidateIds.length === 0) return [];
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, full_name, phone, email")
+        .in("id", candidateIds);
+      if (profilesError) throw profilesError;
+      const profilesById = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
+      return (applications ?? []).map((application) => ({
+        ...application,
+        profiles: profilesById.get(application.candidate_id) ?? null,
+      }));
     },
     refetchInterval: 10000,
   });

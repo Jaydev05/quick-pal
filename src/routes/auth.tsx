@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Loader2, ShieldCheck, UserRoundPlus } from "lucide-react";
+import { KeyRound, Loader2, ShieldCheck } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,35 +46,31 @@ const passwordSchema = z.string().min(8, "Password must be at least 8 characters
 function AuthPage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const { refreshRoles } = useAuth();
   const [busy, setBusy] = useState(false);
+  const [awaitingOtp, setAwaitingOtp] = useState(false);
 
   const redirectTo = search.redirect ?? "/admin";
-
-  useEffect(() => {
-    if (!loading && user) void navigate({ to: redirectTo, replace: true });
-  }, [user, loading, redirectTo, navigate]);
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const fd = new FormData(event.currentTarget);
-    const email = emailSchema.safeParse(fd.get("email"));
     const password = passwordSchema.safeParse(fd.get("password"));
-    if (!email.success || !password.success) {
+    if (!password.success) {
       toast.error("Invalid credentials");
       return;
     }
     setBusy(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email.data.toLowerCase(),
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: ADMIN_EMAIL,
       password: password.data,
     });
-    setBusy(false);
     if (error) {
+      setBusy(false);
       if (error.code === "email_not_confirmed") {
         await supabase.auth.resend({
           type: "signup",
-          email: email.data.toLowerCase(),
+          email: ADMIN_EMAIL,
           options: { emailRedirectTo: window.location.origin },
         });
         toast.error("Administrator email is not confirmed. We sent a new confirmation link.");
@@ -83,40 +79,73 @@ function AuthPage() {
       toast.error("Invalid credentials");
       return;
     }
-    toast.success("Welcome back");
-    void navigate({ to: redirectTo });
-  }
 
-  async function handleAdminSetup(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const fd = new FormData(event.currentTarget);
-    const email = emailSchema.safeParse(fd.get("setup_email"));
-    const password = passwordSchema.safeParse(fd.get("setup_password"));
-    if (!email.success || email.data.toLowerCase() !== ADMIN_EMAIL || !password.success) {
-      toast.error("Enter the official administrator email and a valid password.");
+    const userId = data.user?.id;
+    if (!userId) {
+      await supabase.auth.signOut();
+      setBusy(false);
+      toast.error("Administrator sign-in could not be verified.");
+      return;
+    }
+    const { data: role } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    await supabase.auth.signOut();
+    if (!role) {
+      setBusy(false);
+      toast.error("This account is not authorised for administrator access.");
       return;
     }
 
-    setBusy(true);
-    const { data, error } = await supabase.auth.signUp({
-      email: email.data.toLowerCase(),
-      password: password.data,
-      options: {
-        emailRedirectTo: window.location.origin,
-        data: { full_name: "Jaydev Associates Administrator" },
-      },
+    const { error: otpError } = await supabase.auth.signInWithOtp({
+      email: ADMIN_EMAIL,
+      options: { shouldCreateUser: false },
     });
     setBusy(false);
+    if (otpError) {
+      toast.error(otpError.message);
+      return;
+    }
+    setAwaitingOtp(true);
+    toast.success("A one-time login code was sent to the administrator email.");
+  }
 
-    if (error) {
-      toast.error(error.message);
+  async function handleOtp(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const token = String(new FormData(event.currentTarget).get("otp") ?? "").trim();
+    if (!/^\d{6}$/.test(token)) {
+      toast.error("Enter the 6-digit code from the administrator email.");
       return;
     }
-    if (!data.session) {
-      toast.success("Check the official email to confirm the administrator account, then sign in.");
+    setBusy(true);
+    const { data, error } = await supabase.auth.verifyOtp({
+      email: ADMIN_EMAIL,
+      token,
+      type: "email",
+    });
+    if (error || data.user?.email?.toLowerCase() !== ADMIN_EMAIL) {
+      setBusy(false);
+      toast.error("The code is invalid or has expired.");
       return;
     }
-    toast.success("Administrator account created.");
+    const { data: role } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", data.user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (!role) {
+      await supabase.auth.signOut();
+      setBusy(false);
+      toast.error("This account is not authorised for administrator access.");
+      return;
+    }
+    await refreshRoles();
+    setBusy(false);
+    toast.success("Administrator verified.");
     void navigate({ to: redirectTo });
   }
 
@@ -160,17 +189,12 @@ function AuthPage() {
             Restricted area. Sign in with the official administrator credentials.
           </p>
 
-          <form onSubmit={handleLogin} className="mt-6 space-y-4" noValidate>
+          {!awaitingOtp ? <form onSubmit={handleLogin} className="mt-6 space-y-4" noValidate>
             <div>
-              <Label htmlFor="email">Admin email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="username"
-                className="mt-2"
-                placeholder="you@example.com"
-              />
+              <Label>Admin email</Label>
+              <p className="mt-2 rounded-md border border-border bg-secondary px-3 py-2 text-sm text-card-foreground">
+                {ADMIN_EMAIL}
+              </p>
             </div>
             <div>
               <Label htmlFor="password">Password</Label>
@@ -183,41 +207,30 @@ function AuthPage() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={busy}>
-              {busy && <Loader2 className="animate-spin" />} Sign in
+              {busy && <Loader2 className="animate-spin" />} Continue securely
             </Button>
-          </form>
-
-          <details className="mt-5 border-t border-border pt-5">
-            <summary className="cursor-pointer text-sm font-medium text-card-foreground">
-              First-time administrator setup
-            </summary>
-            <form onSubmit={handleAdminSetup} className="mt-4 space-y-3" noValidate>
-              <div>
-                <Label htmlFor="setup_email">Official administrator email</Label>
-                <Input
-                  id="setup_email"
-                  name="setup_email"
-                  type="email"
-                  autoComplete="email"
-                  className="mt-2"
-                />
-              </div>
-              <div>
-                <Label htmlFor="setup_password">Set password</Label>
-                <Input
-                  id="setup_password"
-                  name="setup_password"
-                  type="password"
-                  autoComplete="new-password"
-                  className="mt-2"
-                />
-              </div>
-              <Button type="submit" variant="secondary" className="w-full" disabled={busy}>
-                {busy ? <Loader2 className="animate-spin" /> : <UserRoundPlus />}
-                Create administrator account
-              </Button>
-            </form>
-          </details>
+          </form> : <form onSubmit={handleOtp} className="mt-6 space-y-4" noValidate>
+            <div>
+              <Label htmlFor="otp">Email verification code</Label>
+              <Input
+                id="otp"
+                name="otp"
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                maxLength={6}
+                className="mt-2 text-center text-lg"
+                placeholder="6-digit code"
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={busy}>
+              {busy ? <Loader2 className="animate-spin" /> : <KeyRound />}
+              Verify and open admin panel
+            </Button>
+            <Button type="button" variant="ghost" className="w-full" onClick={() => setAwaitingOtp(false)}>
+              Use password again
+            </Button>
+          </form>}
 
           <form onSubmit={handleReset} className="mt-6 border-t border-border pt-5">
             <Label htmlFor="reset_email" className="text-xs text-muted-foreground">
