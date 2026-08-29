@@ -72,7 +72,12 @@ function AuthPage() {
     setBusy(false);
     if (error) {
       if (error.code === "email_not_confirmed") {
-        toast.error("Please confirm the administrator email first, then sign in.");
+        await supabase.auth.resend({
+          type: "signup",
+          email: email.data.toLowerCase(),
+          options: { emailRedirectTo: window.location.origin },
+        });
+        toast.error("Administrator email is not confirmed. We sent a new confirmation link.");
         return;
       }
       toast.error("Invalid credentials");
@@ -108,7 +113,7 @@ function AuthPage() {
       return;
     }
     if (!data.session) {
-      toast.error("This administrator account already exists. Use Sign in or Forgot password.");
+      toast.success("Check the official email to confirm the administrator account, then sign in.");
       return;
     }
     toast.success("Administrator account created.");
