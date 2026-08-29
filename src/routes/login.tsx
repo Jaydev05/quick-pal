@@ -77,6 +77,15 @@ function LoginPage() {
     });
     setBusy(false);
     if (error) {
+      if (error.code === "email_not_confirmed") {
+        await supabase.auth.resend({
+          type: "signup",
+          email: email.data.toLowerCase(),
+          options: { emailRedirectTo: window.location.origin },
+        });
+        toast.error("Your email is not confirmed. We sent a new confirmation link.");
+        return;
+      }
       toast.error("Invalid email or password");
       return;
     }

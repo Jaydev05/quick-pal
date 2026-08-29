@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { Loader2, ShieldCheck, UserRoundPlus } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,10 +71,52 @@ function AuthPage() {
     });
     setBusy(false);
     if (error) {
+      if (error.code === "email_not_confirmed") {
+        await supabase.auth.resend({
+          type: "signup",
+          email: email.data.toLowerCase(),
+          options: { emailRedirectTo: window.location.origin },
+        });
+        toast.error("Administrator email is not confirmed. We sent a new confirmation link.");
+        return;
+      }
       toast.error("Invalid credentials");
       return;
     }
     toast.success("Welcome back");
+    void navigate({ to: redirectTo });
+  }
+
+  async function handleAdminSetup(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const fd = new FormData(event.currentTarget);
+    const email = emailSchema.safeParse(fd.get("setup_email"));
+    const password = passwordSchema.safeParse(fd.get("setup_password"));
+    if (!email.success || email.data.toLowerCase() !== ADMIN_EMAIL || !password.success) {
+      toast.error("Enter the official administrator email and a valid password.");
+      return;
+    }
+
+    setBusy(true);
+    const { data, error } = await supabase.auth.signUp({
+      email: email.data.toLowerCase(),
+      password: password.data,
+      options: {
+        emailRedirectTo: window.location.origin,
+        data: { full_name: "Jaydev Associates Administrator" },
+      },
+    });
+    setBusy(false);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    if (!data.session) {
+      toast.success("Check the official email to confirm the administrator account, then sign in.");
+      return;
+    }
+    toast.success("Administrator account created.");
     void navigate({ to: redirectTo });
   }
 
@@ -144,6 +186,38 @@ function AuthPage() {
               {busy && <Loader2 className="animate-spin" />} Sign in
             </Button>
           </form>
+
+          <details className="mt-5 border-t border-border pt-5">
+            <summary className="cursor-pointer text-sm font-medium text-card-foreground">
+              First-time administrator setup
+            </summary>
+            <form onSubmit={handleAdminSetup} className="mt-4 space-y-3" noValidate>
+              <div>
+                <Label htmlFor="setup_email">Official administrator email</Label>
+                <Input
+                  id="setup_email"
+                  name="setup_email"
+                  type="email"
+                  autoComplete="email"
+                  className="mt-2"
+                />
+              </div>
+              <div>
+                <Label htmlFor="setup_password">Set password</Label>
+                <Input
+                  id="setup_password"
+                  name="setup_password"
+                  type="password"
+                  autoComplete="new-password"
+                  className="mt-2"
+                />
+              </div>
+              <Button type="submit" variant="secondary" className="w-full" disabled={busy}>
+                {busy ? <Loader2 className="animate-spin" /> : <UserRoundPlus />}
+                Create administrator account
+              </Button>
+            </form>
+          </details>
 
           <form onSubmit={handleReset} className="mt-6 border-t border-border pt-5">
             <Label htmlFor="reset_email" className="text-xs text-muted-foreground">
