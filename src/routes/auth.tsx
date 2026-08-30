@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -143,7 +143,7 @@ function AuthPage() {
       toast.error("This account is not authorised for administrator access.");
       return;
     }
-    await refreshRoles();
+    await refreshRoles(data.user.id);
     setBusy(false);
     toast.success("Administrator verified.");
     void navigate({ to: redirectTo });
