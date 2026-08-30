@@ -13,7 +13,7 @@ type AuthValue = {
   isRecruiter: boolean;
   isStaff: boolean;
   signOut: () => Promise<void>;
-  refreshRoles: () => Promise<void>;
+  refreshRoles: (userId?: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthValue | null>(null);
@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await supabase.auth.signOut();
         setRoles([]);
       },
-      refreshRoles: () => loadRoles(session?.user?.id),
+      refreshRoles: (userId?: string) => loadRoles(userId ?? session?.user?.id),
     };
   }, [session, roles, loading]);
 

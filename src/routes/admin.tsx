@@ -104,7 +104,7 @@ function AdminPage() {
         title="Recruitment console"
         description="Manage job postings, applications and service enquiries."
       />
-      <Tabs defaultValue="jobs">
+      <Tabs defaultValue="applications">
         <TabsList>
           <TabsTrigger value="jobs">Jobs</TabsTrigger>
           <TabsTrigger value="applications">Applications</TabsTrigger>
