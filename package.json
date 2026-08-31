@@ -4,15 +4,20 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
+"dev": "vite dev",
     "build": "vite build",
+    "build:node": "NITRO_PRESET=node-server vite build",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
+    "start": "node .output/server/index.mjs",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
-  "overrides": {
+"overrides": {
     "rolldown": "1.2.1"
+  },
+  "engines": {
+    "node": ">=20.19.0"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
