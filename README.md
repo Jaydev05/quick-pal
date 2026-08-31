@@ -40,12 +40,15 @@ bun run dev
 | Command | Description |
 |---|---|
 | `bun run dev` | Dev server with HMR on http://localhost:3000 |
-| `bun run build` | Production build → `.output/` |
+| `bun run build` | Production build → `dist/` (default Cloudflare target) |
+| `bun run build:node` | **Node production build → `.output/`** (for Hostinger VPS / shared hosting) |
 | `bun run build:dev` | Development-mode build |
 | `bun run preview` | Serve the production build locally |
-| `bun run start` | Run the built app (`node .output/server/index.mjs`) |
+| `bun run start` | Run the Node build (`node .output/server/index.mjs`) |
 | `bun run lint` | ESLint |
 | `bun run format` | Prettier |
+
+> **Important**: the default `bun run build` targets Cloudflare (Lovable's own runtime) and outputs to `dist/`. For Hostinger (a plain Node host) you must use **`bun run build:node`**, which sets `NITRO_PRESET=node-server` and outputs a runnable Node server to `.output/server/index.mjs`.
 
 ## Admin & candidate accounts
 
