@@ -75,7 +75,7 @@ cd /var/www/jaydev
 # 3. Install + configure
 bun install
 cp .env.example .env        # → fill in real backend values
-bun run build               # → produces .output/
+bun run build:node          # → produces .output/ (Node server)
 
 # 4. Start with PM2
 pm2 start ecosystem.config.cjs
@@ -116,7 +116,7 @@ Builds locally and uploads the result (no SSH server access needed):
 
 ```sh
 # On your machine:
-bun install && bun run build     # → .output/ folder
+bun install && bun run build:node   # → .output/ folder
 ```
 
 In **hPanel → Websites → Manage → Node.js** (or Hostinger's Node.js app setup):
@@ -133,7 +133,7 @@ Hostinger restarts the Node process automatically; the app listens on the port H
 ### After deploying
 
 - Test: public pages, job listing, candidate signup/apply, and `/auth` admin login (password + email OTP).
-- The first deployment of frontend changes requires re-running `bun run build` and restarting the app (`pm2 restart jaydev-associates` on VPS).
+- The first deployment of frontend changes requires re-running `bun run build:node` and restarting the app (`pm2 restart jaydev-associates` on VPS).
 - Backend changes (database, auth settings) deploy to Lovable Cloud automatically.
 
 ## Project structure
