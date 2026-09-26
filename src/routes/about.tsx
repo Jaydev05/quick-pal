@@ -124,8 +124,8 @@ function AboutPage() {
     </Section>
 
     <Section><div className="grid gap-5 md:grid-cols-2">
-      <article className="rounded-md border border-border bg-card p-7 md:p-10"><p className="eyebrow">Our Vision</p><h2 className="mt-4 font-display text-2xl font-semibold text-card-foreground">Looking forward</h2><p className="mt-5 text-base leading-8 text-muted-foreground">To build a trusted multi-domain organization recognized for professional service, reliable solutions and long-term value for our clients.</p></article>
-      <article className="rounded-md border border-border bg-card p-7 md:p-10"><p className="eyebrow">Our Mission</p><h2 className="mt-4 font-display text-2xl font-semibold text-card-foreground">Our purpose</h2><p className="mt-5 text-base leading-8 text-muted-foreground">To understand our clients' requirements and deliver practical, responsive and quality-driven solutions through professional execution, responsible business practices and consistent service.</p></article>
+      <article className="rounded-md border border-border bg-card p-7 md:p-10"><h2 className="font-display text-2xl font-semibold text-card-foreground">Our Vision</h2><div className="gold-rule mt-5" /><p className="mt-5 text-base leading-8 text-muted-foreground">To build a trusted multi-domain organization recognized for professional service, reliable solutions and long-term value for our clients.</p></article>
+      <article className="rounded-md border border-border bg-card p-7 md:p-10"><h2 className="font-display text-2xl font-semibold text-card-foreground">Our Mission</h2><div className="gold-rule mt-5" /><p className="mt-5 text-base leading-8 text-muted-foreground">To understand our clients' requirements and deliver practical, responsive and quality-driven solutions through professional execution, responsible business practices and consistent service.</p></article>
     </div></Section>
 
     <Section dark><Heading title="Our Approach" description="Understanding the requirement. Building the right solution. Delivering with accountability." />
