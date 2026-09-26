@@ -70,10 +70,10 @@ function CertificateCard({ certificate }: { certificate: typeof certificates[num
       <p className="mt-5 text-xs text-muted-foreground">Redacted copy for website display.</p>
       <Dialog>
         <DialogTrigger asChild><Button className="mt-5">View Certificate <ExternalLink /></Button></DialogTrigger>
-        <DialogContent className="flex h-[90dvh] w-[95vw] max-w-5xl flex-col overflow-hidden rounded-md p-4 sm:p-6">
+        <DialogContent className="flex max-h-[90dvh] w-[95vw] max-w-5xl flex-col overflow-hidden rounded-md p-4 sm:p-6">
           <DialogHeader className="pr-8"><DialogTitle>{certificate.title}</DialogTitle><DialogDescription>Redacted copy for website display.</DialogDescription></DialogHeader>
-          <div className="min-h-0 flex-1 overflow-auto bg-secondary p-2">
-            <img src={certificate.image} alt={`${certificate.title} — redacted website copy`} className="mx-auto h-auto max-w-full object-contain" />
+          <div className="min-h-0 overflow-auto bg-secondary p-2">
+            <img src={certificate.image} alt={`${certificate.title} — redacted website copy`} className="mx-auto max-h-[70dvh] max-w-full object-contain" />
           </div>
           <a href={certificate.document} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 self-start text-sm font-medium text-gold-deep hover:underline"><Download className="size-4" /> Open redacted PDF</a>
         </DialogContent>
