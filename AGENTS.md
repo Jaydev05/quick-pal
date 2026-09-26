@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep the About page's registration documents as labelled, redacted CDN website copies; the supplied originals contain PAN/TAN and an outdated email unsuitable for public display.

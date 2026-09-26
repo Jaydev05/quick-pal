@@ -9,12 +9,13 @@ export function Footer() {
       <div className="container-x grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-2">
           <Logo height={44} />
+          <p className="mt-4 font-display text-sm font-semibold text-foreground">JAYDEV ASSOCIATES LLP</p>
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">{COMPANY.tagline}</p>
           <div className="gold-rule mt-5" />
           <div className="mt-5 space-y-2 text-sm text-muted-foreground">
             <p className="flex items-start gap-2">
               <MapPin className="mt-0.5 size-4 shrink-0 text-gold" />
-              <span>{COMPANY.addressLines.join(" ")}</span>
+              <span>488, C/O Jaydev Associates LLP, Near SBI Bank, A/P Goregaon, Tal. Mangaon, Raigad, Maharashtra – 402103, India</span>
             </p>
             <p className="flex items-center gap-2">
               <Phone className="size-4 shrink-0 text-gold" />
@@ -23,10 +24,17 @@ export function Footer() {
               </a>
             </p>
             <p className="flex items-center gap-2">
+              <Phone className="size-4 shrink-0 text-gold" />
+              <a href="tel:+919322021991" className="hover:text-foreground">+91 9322021991</a>
+            </p>
+            <p className="flex items-center gap-2">
               <Mail className="size-4 shrink-0 text-gold" />
-              <a href={COMPANY.emailHref} className="hover:text-foreground">
-                {COMPANY.email}
+              <a href="mailto:info@jaydevassociates.com" className="hover:text-foreground">
+                info@jaydevassociates.com
               </a>
+            </p>
+            <p className="flex items-center gap-2">
+              <a href="https://www.jaydevassociates.com" className="hover:text-foreground">www.jaydevassociates.com</a>
             </p>
             <p className="flex items-center gap-2">
               <Instagram className="size-4 shrink-0 text-gold" />
