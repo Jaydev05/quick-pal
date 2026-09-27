@@ -9,4 +9,4 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- Keep the About page's registration documents as labelled, redacted CDN website copies; the supplied originals contain PAN/TAN and an outdated email unsuitable for public display.
+- Keep the About page's MCA and Udyam registration documents as labelled, redacted CDN website copies; their originals contain sensitive or outdated details, while the ISO certificate is displayed from the supplied original.
