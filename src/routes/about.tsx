@@ -5,6 +5,7 @@ import { Section } from "@/components/home/Section";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import founder from "@/assets/jay-doshi-founder.jpeg.asset.json";
+import aboutBackdrop from "@/assets/hero-office.jpg";
 import mcaPreview from "@/assets/mca-website-copy.png.asset.json";
 import mcaDocument from "@/assets/mca-website-copy.pdf.asset.json";
 import udyamPreview from "@/assets/udyam-website-copy.png.asset.json";
@@ -94,15 +95,20 @@ function CertificateCard({ certificate }: { certificate: typeof certificates[num
 
 function AboutPage() {
   return <PublicShell>
-    <section className="surface-dark bg-background py-16 md:py-24">
-      <div className="container-x">
-        <p className="eyebrow">About Jaydev Associates</p>
-        <h1 className="mt-4 max-w-4xl font-display text-4xl font-bold leading-tight text-foreground md:text-6xl">Your Growth, Our Commitment</h1>
-        <div className="mt-7 max-w-3xl space-y-5 text-base leading-8 text-muted-foreground md:text-lg">
+    <section className="surface-dark relative isolate overflow-hidden bg-background">
+      <img src={aboutBackdrop} alt="" aria-hidden="true" className="absolute inset-0 size-full object-cover object-center opacity-20" />
+      <div className="absolute inset-0 bg-gradient-ink opacity-90" aria-hidden="true" />
+      <div className="absolute inset-y-0 right-0 hidden w-1/3 border-l border-gold/10 bg-background/25 lg:block" aria-hidden="true" />
+      <div className="container-x relative py-16 md:py-24 lg:py-28">
+        <div className="max-w-4xl border-l border-gold/60 pl-5 md:pl-8">
+          <p className="eyebrow">About Jaydev Associates</p>
+          <h1 className="mt-4 max-w-4xl font-display text-4xl font-bold leading-tight text-foreground md:text-6xl">Your Growth, Our Commitment</h1>
+          <div className="mt-7 max-w-3xl space-y-5 text-base leading-8 text-muted-foreground md:text-lg">
           <p>Jaydev Associates LLP is a Maharashtra-based multi-domain professional services organization providing dependable solutions across Recruitment, Security, Facility Management, IT Solutions and Real Estate Services.</p>
           <p>Our primary focus is Recruitment Solutions, where we support organizations with their hiring and staffing requirements. Alongside recruitment, our other service areas enable us to support businesses, organizations, property owners and investors with a range of professional and operational requirements.</p>
+          </div>
+          <div className="gold-rule mt-9" />
         </div>
-        <div className="gold-rule mt-9" />
       </div>
     </section>
 
@@ -123,12 +129,30 @@ function AboutPage() {
       </div>
     </Section>
 
-    <Section dark>
-      <div className="grid items-center gap-10 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] md:gap-16 lg:gap-24">
-        <div className="mx-auto w-full max-w-md overflow-hidden rounded-md border border-gold/40 bg-card"><img src={founder.url} alt="Jay Doshi, Founder of Jaydev Associates LLP" className="aspect-[4/5] w-full object-cover object-top" loading="lazy" /></div>
-        <div><Heading eyebrow="Leadership" title="Meet Our Founder" /><h3 className="mt-8 font-display text-2xl font-semibold text-foreground">Jay Doshi</h3><p className="mt-1 text-sm font-medium text-gold">Founder, Jaydev Associates LLP</p>
-          <div className="mt-7 space-y-5 leading-8 text-muted-foreground"><p>Jay Doshi is the Founder of Jaydev Associates LLP and leads the organization with a focus on business development, professional service delivery and long-term client relationships.</p><p>With an emphasis on understanding client requirements and providing practical solutions, he guides the development of Jaydev Associates as a multi-domain professional services organization.</p><p>Under his leadership, the organization focuses primarily on Recruitment Solutions, while developing capabilities across Security, Facility Management, IT Solutions and Real Estate Services.</p></div>
-          <p className="mt-8 border-l-2 border-gold pl-5 font-display text-lg text-gold-soft">Leadership with a focus on service, professionalism and long-term relationships.</p>
+    <Section dark className="relative overflow-hidden border-y border-border">
+      <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[38%] border-r border-gold/10 bg-secondary/20 lg:block" aria-hidden="true" />
+      <div className="relative grid items-center gap-12 md:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] md:gap-14 lg:gap-24">
+        <div className="relative mx-auto w-full max-w-md md:mx-0">
+          <div className="absolute -left-3 -top-3 size-20 border-l border-t border-gold/70 md:-left-5 md:-top-5 md:size-28" aria-hidden="true" />
+          <div className="absolute -bottom-3 -right-3 size-20 border-b border-r border-gold/40 md:-bottom-5 md:-right-5 md:size-28" aria-hidden="true" />
+          <div className="relative overflow-hidden rounded-sm border border-gold/30 bg-card shadow-gold">
+            <img src={founder.url} alt="Jay Doshi, Founder of Jaydev Associates LLP" className="aspect-[4/5] w-full object-cover object-top" loading="lazy" />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/75 to-transparent px-6 pb-6 pt-20 md:px-8 md:pb-8">
+              <p className="font-display text-2xl font-semibold text-foreground">Jay Doshi</p>
+              <p className="mt-1 text-sm font-medium text-gold">Founder, Jaydev Associates LLP</p>
+            </div>
+          </div>
+        </div>
+        <div className="min-w-0">
+          <Heading eyebrow="Leadership" title="Meet Our Founder" />
+          <div className="mt-8 grid gap-5 text-base leading-8 text-muted-foreground lg:grid-cols-2 lg:gap-x-8">
+            <p>Jay Doshi is the Founder of Jaydev Associates LLP and leads the organization with a focus on business development, professional service delivery and long-term client relationships.</p>
+            <p>With an emphasis on understanding client requirements and providing practical solutions, he guides the development of Jaydev Associates as a multi-domain professional services organization.</p>
+            <p className="lg:col-span-2">Under his leadership, the organization focuses primarily on Recruitment Solutions, while developing capabilities across Security, Facility Management, IT Solutions and Real Estate Services.</p>
+          </div>
+          <div className="mt-9 border-l-2 border-gold bg-secondary/40 px-5 py-5 md:px-7">
+            <p className="font-display text-lg font-medium leading-7 text-gold-soft md:text-xl">Leadership with a focus on service, professionalism and long-term relationships.</p>
+          </div>
         </div>
       </div>
     </Section>
