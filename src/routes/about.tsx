@@ -9,6 +9,8 @@ import mcaPreview from "@/assets/mca-website-copy.png.asset.json";
 import mcaDocument from "@/assets/mca-website-copy.pdf.asset.json";
 import udyamPreview from "@/assets/udyam-website-copy.png.asset.json";
 import udyamDocument from "@/assets/udyam-website-copy.pdf.asset.json";
+import isoPreview from "@/assets/iso-9001-2015-certificate.jpg.asset.json";
+import isoDocument from "@/assets/iso-9001-2015-certificate.pdf.asset.json";
 
 export const Route = createFileRoute("/about")({
   head: () => ({ meta: [
@@ -44,8 +46,9 @@ const credentials = [
 ] as const;
 
 const certificates = [
-  { title: "MCA Certificate of Incorporation", subtitle: "JAYDEV ASSOCIATES LLP", details: ["LLPIN: ACV-7448", "Date of Incorporation: 25 February 2026", "Issued by: Ministry of Corporate Affairs, Government of India"], image: mcaPreview.url, document: mcaDocument.url },
-  { title: "Udyam Registration Certificate", subtitle: "JAYDEV ASSOCIATES LLP", details: ["Udyam Registration No.: UDYAM-MH-27-0251675", "Enterprise Type: Micro", "Major Activity: Services"], image: udyamPreview.url, document: udyamDocument.url },
+  { title: "MCA Certificate of Incorporation", classification: "Legal / Corporate Registration", subtitle: "JAYDEV ASSOCIATES LLP", details: ["LLPIN: ACV-7448", "Date of Incorporation: 25 February 2026", "Issued by: Ministry of Corporate Affairs, Government of India"], image: mcaPreview.url, document: mcaDocument.url, redacted: true },
+  { title: "Udyam Registration Certificate", classification: "MSME / Enterprise Registration", subtitle: "JAYDEV ASSOCIATES LLP", details: ["Udyam Registration No.: UDYAM-MH-27-0251675", "Enterprise Type: Micro", "Major Activity: Services"], image: udyamPreview.url, document: udyamDocument.url, redacted: true },
+  { title: "ISO 9001:2015 Certification", classification: "Quality Management System Certification", subtitle: "QUALITY MANAGEMENT SYSTEM", details: ["ISO 9001:2015", "Certificate No.: 3D986500", "Certified Since: 18 March 2026", "Valid Until: 17 March 2029"], scope: "Certified scope includes Recruitment & Consultancy, Real Estate Advisory, Integrated Facility Management and IT Solutions.", image: isoPreview.url, document: isoDocument.url, redacted: false },
 ] as const;
 
 function Heading({ eyebrow, title, description }: { eyebrow?: string; title: string; description?: string }) {
@@ -58,24 +61,31 @@ function Heading({ eyebrow, title, description }: { eyebrow?: string; title: str
 }
 
 function CertificateCard({ certificate }: { certificate: typeof certificates[number] }) {
-  return <article className="overflow-hidden rounded-md border border-border bg-card">
-    <div className="flex h-72 items-center justify-center border-b border-border bg-secondary p-5 md:h-80">
-      <img src={certificate.image} alt={`${certificate.title} — redacted website copy`} loading="lazy" className="h-full w-full object-contain" />
+  const imageDescription = certificate.redacted ? " — redacted website copy" : "";
+
+  return <article className="group flex h-full flex-col overflow-hidden rounded-md border border-border bg-card shadow-card transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-1 hover:border-gold/50 hover:shadow-gold">
+    <div className="relative flex h-72 items-center justify-center overflow-hidden border-b border-border bg-secondary p-5 md:h-80">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-gold opacity-70" />
+      <img src={certificate.image} alt={`${certificate.title}${imageDescription}`} loading="lazy" className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.02]" />
     </div>
-    <div className="p-6 md:p-8">
-      <FileText className="size-6 text-gold" aria-hidden="true" />
+    <div className="flex flex-1 flex-col p-6 md:p-7">
+      <div className="flex items-start justify-between gap-4">
+        <FileText className="size-6 shrink-0 text-gold" aria-hidden="true" />
+        <span className="rounded-sm border border-gold/30 bg-accent px-2.5 py-1 text-right text-[10px] font-bold uppercase leading-4 text-gold-deep">{certificate.classification}</span>
+      </div>
       <h3 className="mt-4 font-display text-xl font-semibold text-card-foreground">{certificate.title}</h3>
       <p className="mt-1 text-xs font-semibold uppercase text-gold-deep">{certificate.subtitle}</p>
-      <ul className="mt-5 space-y-2 text-sm text-muted-foreground">{certificate.details.map(detail => <li key={detail}>{detail}</li>)}</ul>
-      <p className="mt-5 text-xs text-muted-foreground">Redacted copy for website display.</p>
+      <ul className="mt-5 space-y-2 border-t border-border pt-5 text-sm leading-6 text-muted-foreground">{certificate.details.map(detail => <li key={detail}>{detail}</li>)}</ul>
+      {"scope" in certificate && <p className="mt-4 text-sm leading-6 text-muted-foreground">{certificate.scope}</p>}
+      {certificate.redacted && <p className="mt-5 text-xs text-muted-foreground">Redacted copy for website display.</p>}
       <Dialog>
-        <DialogTrigger asChild><Button className="mt-5">View Certificate <ExternalLink /></Button></DialogTrigger>
+        <DialogTrigger asChild><Button className="mt-auto w-full pt-0" style={{ marginTop: "1.5rem" }}>View Certificate <ExternalLink /></Button></DialogTrigger>
         <DialogContent className="flex max-h-[90dvh] w-[95vw] max-w-5xl flex-col overflow-hidden rounded-md p-4 sm:p-6">
-          <DialogHeader className="pr-8"><DialogTitle>{certificate.title}</DialogTitle><DialogDescription>Redacted copy for website display.</DialogDescription></DialogHeader>
+          <DialogHeader className="pr-8"><DialogTitle>{certificate.title}</DialogTitle><DialogDescription>{certificate.redacted ? "Redacted copy for website display." : certificate.classification}</DialogDescription></DialogHeader>
           <div className="min-h-0 overflow-auto bg-secondary p-2">
-            <img src={certificate.image} alt={`${certificate.title} — redacted website copy`} className="mx-auto max-h-[70dvh] max-w-full object-contain" />
+            <img src={certificate.image} alt={`${certificate.title}${imageDescription}`} className="mx-auto max-h-[70dvh] max-w-full object-contain" />
           </div>
-          <a href={certificate.document} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 self-start text-sm font-medium text-gold-deep hover:underline"><Download className="size-4" /> Open redacted PDF</a>
+          <a href={certificate.document} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 self-start text-sm font-medium text-gold-deep hover:underline"><Download className="size-4" /> Open {certificate.redacted ? "redacted " : ""}PDF</a>
         </DialogContent>
       </Dialog>
     </div>
@@ -146,8 +156,8 @@ function AboutPage() {
       <dl className="mt-10 grid border-t border-border md:grid-cols-2">{credentials.map(([label, value]) => <div key={label} className="min-w-0 border-b border-border py-5 md:pr-12"><dt className="text-xs font-semibold uppercase text-gold">{label}</dt><dd className="mt-2 break-words leading-7 text-foreground">{value}</dd></div>)}</dl>
     </Section>
 
-    <Section><Heading eyebrow="Official Registrations" title="Our Official Registrations" description="Our official registrations establish the legal identity and business registration status of Jaydev Associates LLP." />
-      <div className="mt-10 grid gap-6 md:grid-cols-2">{certificates.map(certificate => <CertificateCard key={certificate.title} certificate={certificate} />)}</div>
+    <Section className="relative overflow-hidden border-y border-border bg-secondary/40"><div className="absolute inset-x-0 top-0 h-px bg-gradient-gold opacity-60" aria-hidden="true" /><Heading eyebrow="Official Registrations & Certifications" title="Our Official Registrations & Certifications" description="Our official registrations and certifications reflect the legal identity, business registration and quality management framework of Jaydev Associates LLP." />
+      <div className="mt-12 grid items-stretch gap-6 md:grid-cols-2 xl:grid-cols-3">{certificates.map(certificate => <CertificateCard key={certificate.title} certificate={certificate} />)}</div>
     </Section>
 
     <Section dark><Heading title="Why Jaydev Associates" />
