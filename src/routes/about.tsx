@@ -79,7 +79,7 @@ function CertificateCard({ certificate }: { certificate: typeof certificates[num
       {"scope" in certificate && <p className="mt-4 text-sm leading-6 text-muted-foreground">{certificate.scope}</p>}
       {certificate.redacted && <p className="mt-5 text-xs text-muted-foreground">Redacted copy for website display.</p>}
       <Dialog>
-        <DialogTrigger asChild><Button className="mt-auto w-full pt-0" style={{ marginTop: "1.5rem" }}>View Certificate <ExternalLink /></Button></DialogTrigger>
+        <DialogTrigger asChild><Button className="mt-auto w-full">View Certificate <ExternalLink /></Button></DialogTrigger>
         <DialogContent className="flex max-h-[90dvh] w-[95vw] max-w-5xl flex-col overflow-hidden rounded-md p-4 sm:p-6">
           <DialogHeader className="pr-8"><DialogTitle>{certificate.title}</DialogTitle><DialogDescription>{certificate.redacted ? "Redacted copy for website display." : certificate.classification}</DialogDescription></DialogHeader>
           <div className="min-h-0 overflow-auto bg-secondary p-2">
