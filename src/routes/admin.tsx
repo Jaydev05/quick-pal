@@ -28,8 +28,8 @@ import { fetchCategories, randomCode, signedResumeUrl } from "@/lib/api";
 import { downloadCsv, formatDate, slugify } from "@/lib/format";
 import { updateApplicationStatus } from "@/lib/application-email.functions";
 import {
+  ADMIN_APPLICATION_STATUS_LIST,
   APPLICATION_STATUS,
-  APPLICATION_STATUS_LIST,
   EMPLOYMENT_TYPE,
   EMPLOYMENT_TYPE_LIST,
   ENQUIRY_STATUS_LIST,
@@ -571,7 +571,7 @@ function ApplicationsAdmin() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All statuses</SelectItem>
-            {APPLICATION_STATUS_LIST.map((s) => (
+            {ADMIN_APPLICATION_STATUS_LIST.map((s) => (
               <SelectItem key={s} value={s}>
                 {APPLICATION_STATUS[s].label}
               </SelectItem>
@@ -670,7 +670,10 @@ function ApplicationsAdmin() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {APPLICATION_STATUS_LIST.map((s) => (
+                          {(ADMIN_APPLICATION_STATUS_LIST.includes(r.current_status)
+                            ? ADMIN_APPLICATION_STATUS_LIST
+                            : [r.current_status, ...ADMIN_APPLICATION_STATUS_LIST]
+                          ).map((s) => (
                             <SelectItem key={s} value={s}>
                               {APPLICATION_STATUS[s].label}
                             </SelectItem>
