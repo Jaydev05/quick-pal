@@ -2,7 +2,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { APPLICATION_STATUS_LIST, type ApplicationStatus } from "@/lib/status";
-import { sendApplicationEmail } from "@/lib/application-email.server";
 
 const applicationIdSchema = z.object({ applicationId: z.string().uuid() });
 const statusSchema = z.object({
@@ -89,6 +88,7 @@ export const sendApplicationConfirmation = createServerFn({ method: "POST" })
     if (!logId) return { sent: false, duplicate: true };
 
     try {
+      const { sendApplicationEmail } = await import("@/lib/application-email.server");
       await sendApplicationEmail(
         {
           to: profile.email,
@@ -180,6 +180,7 @@ export const updateApplicationStatus = createServerFn({ method: "POST" })
       : { data: null };
 
     try {
+      const { sendApplicationEmail } = await import("@/lib/application-email.server");
       await sendApplicationEmail(
         {
           to: profile.email,
