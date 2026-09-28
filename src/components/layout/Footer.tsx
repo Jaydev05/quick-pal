@@ -19,13 +19,13 @@ export function Footer() {
             </p>
             <p className="flex items-center gap-2">
               <Phone className="size-4 shrink-0 text-gold" />
-              <a href={COMPANY.phoneHref} className="hover:text-foreground">
-                {COMPANY.phone}
-              </a>
-            </p>
-            <p className="flex items-center gap-2">
-              <Phone className="size-4 shrink-0 text-gold" />
-              <a href="tel:+919322021991" className="hover:text-foreground">+91 9322021991</a>
+              <span className="flex items-center gap-3">
+                <a href={COMPANY.phoneHref} className="hover:text-foreground">
+                  {COMPANY.phone}
+                </a>
+                <span className="text-border" aria-hidden="true">|</span>
+                <a href="tel:+919322021991" className="hover:text-foreground">+91 9322021991</a>
+              </span>
             </p>
             <p className="flex items-center gap-2">
               <Mail className="size-4 shrink-0 text-gold" />
@@ -33,42 +33,35 @@ export function Footer() {
                 info@jaydevassociates.com
               </a>
             </p>
-            <p className="flex items-center gap-2">
-              <a href="https://www.jaydevassociates.com" className="hover:text-foreground">www.jaydevassociates.com</a>
-            </p>
-            <p className="flex items-center gap-2">
-              <Instagram className="size-4 shrink-0 text-gold" />
+            <div className="flex items-center gap-3 pt-2">
               <a
                 href={COMPANY.instagram}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="hover:text-foreground"
+                aria-label="Jaydev Associates on Instagram"
+                className="flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-gold hover:text-gold"
               >
-                @jaydev.associates
+                <Instagram className="size-4" />
               </a>
-            </p>
-            <p className="flex items-center gap-2">
-              <Linkedin className="size-4 shrink-0 text-gold" />
               <a
                 href={COMPANY.linkedin}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="hover:text-foreground"
+                aria-label="Jaydev Associates on LinkedIn"
+                className="flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-gold hover:text-gold"
               >
-                Jaydev Associates
+                <Linkedin className="size-4" />
               </a>
-            </p>
-            <p className="flex items-center gap-2">
-              <MessageCircle className="size-4 shrink-0 text-gold" />
               <a
                 href={whatsappLink("Hello Jaydev Associates, I would like to know more.")}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="hover:text-foreground"
+                aria-label="Chat with Jaydev Associates on WhatsApp"
+                className="flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-gold hover:text-gold"
               >
-                WhatsApp {COMPANY.phone}
+                <MessageCircle className="size-4" />
               </a>
-            </p>
+            </div>
           </div>
         </div>
 
@@ -147,16 +140,6 @@ export function Footer() {
                 Saved Jobs
               </Link>
             </li>
-          </ul>
-          <h3 className="mt-6 font-display text-sm font-semibold tracking-wide text-foreground">
-            Business Hours
-          </h3>
-          <ul className="mt-3 space-y-1 text-sm text-muted-foreground">
-            {COMPANY.hours.map((h) => (
-              <li key={h.days}>
-                {h.days}: {h.time}
-              </li>
-            ))}
           </ul>
         </nav>
       </div>
