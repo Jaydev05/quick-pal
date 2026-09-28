@@ -114,11 +114,17 @@ export const updateApplicationStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => statusSchema.parse(input))
   .handler(async ({ data, context }) => {
-    const { data: isAdmin, error: roleError } = await context.supabase.rpc("has_role", {
-      _user_id: context.userId,
-      _role: "admin",
-    });
-    if (roleError || !isAdmin) throw new Error("Forbidden");
+    const { data: adminRole, error: roleError } = await context.supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (roleError) {
+      console.error("Admin role verification failed", roleError.message);
+      throw new Error("Could not verify admin access. Please sign in again.");
+    }
+    if (!adminRole) throw new Error("Admin access required");
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: application, error: loadError } = await supabaseAdmin

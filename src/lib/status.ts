@@ -52,6 +52,18 @@ export const APPLICATION_PIPELINE: ApplicationStatus[] = [
 ];
 
 export const APPLICATION_STATUS_LIST = Object.keys(APPLICATION_STATUS) as ApplicationStatus[];
+
+/** Focused day-to-day choices shown when an admin updates an application. */
+export const ADMIN_APPLICATION_STATUS_LIST: ApplicationStatus[] = [
+  "applied",
+  "under_review",
+  "shortlisted",
+  "interview_scheduled",
+  "selected",
+  "placed",
+  "on_hold",
+  "rejected",
+];
 export const JOB_STATUS_LIST = Object.keys(JOB_STATUS) as JobStatus[];
 
 export const EMPLOYMENT_TYPE: Record<EmploymentType, string> = {
