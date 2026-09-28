@@ -12,12 +12,6 @@ const statusSchema = z.object({
 
 type NotificationKind = "application_confirmation" | "status_change";
 
-async function authorizeAdmin(
-  supabase: Parameters<Parameters<typeof requireSupabaseAuth>[0]>[0] extends never ? never : never,
-) {
-  return supabase;
-}
-
 async function claimNotification(
   applicationId: string,
   candidateId: string,
@@ -67,13 +61,17 @@ export const sendApplicationConfirmation = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: application, error } = await supabaseAdmin
       .from("applications")
-      .select("id, application_code, applied_at, candidate_id, current_status, jobs(title), profiles:candidate_id(full_name, email)")
+      .select("id, application_code, applied_at, candidate_id, current_status, jobs(title)")
       .eq("id", data.applicationId)
       .eq("candidate_id", context.userId)
       .maybeSingle();
     if (error || !application) throw new Error("Application not found");
 
-    const profile = application.profiles as unknown as { full_name: string | null; email: string | null } | null;
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("full_name, email")
+      .eq("id", application.candidate_id)
+      .maybeSingle();
     const job = application.jobs as unknown as { title: string } | null;
     if (!profile?.email || !job?.title) {
       console.error("Application confirmation skipped because recipient data is incomplete", application.id);
@@ -125,7 +123,7 @@ export const updateApplicationStatus = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: application, error: loadError } = await supabaseAdmin
       .from("applications")
-      .select("id, application_code, candidate_id, current_status, jobs(title), profiles:candidate_id(full_name, email)")
+      .select("id, application_code, candidate_id, current_status, jobs(title)")
       .eq("id", data.applicationId)
       .maybeSingle();
     if (loadError || !application) throw new Error("Application not found");
@@ -149,7 +147,11 @@ export const updateApplicationStatus = createServerFn({ method: "POST" })
       .limit(1)
       .maybeSingle();
 
-    const profile = application.profiles as unknown as { full_name: string | null; email: string | null } | null;
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("full_name, email")
+      .eq("id", application.candidate_id)
+      .maybeSingle();
     const job = application.jobs as unknown as { title: string } | null;
     if (!profile?.email || !job?.title || !history) {
       console.error("Status email skipped because notification data is incomplete", application.id);
