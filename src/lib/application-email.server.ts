@@ -3,7 +3,8 @@ import type { ApplicationStatus } from "@/lib/status";
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/resend";
 const SITE_URL = "https://jaydevassociates.com";
 const LOGO_URL = `${SITE_URL}/media/jaydev-logo.png`;
-const FROM = "Jaydev Associates <noreply@jaydevassociates.com>";
+const FROM = "Jaydev Associates <info@jaydevassociates.com>";
+const REPLY_TO = "info@jaydevassociates.com";
 
 const STATUS_LABELS: Record<ApplicationStatus, string> = {
   applied: "Applied",
@@ -124,7 +125,13 @@ export async function sendApplicationEmail(data: EmailData, kind: "confirmation"
       "X-Connection-Api-Key": resendApiKey,
       "Idempotency-Key": data.idempotencyKey,
     },
-    body: JSON.stringify({ from: FROM, to: [data.to], subject: email.subject, html: email.html }),
+    body: JSON.stringify({
+      from: FROM,
+      to: [data.to],
+      reply_to: REPLY_TO,
+      subject: email.subject,
+      html: email.html,
+    }),
   });
   if (!response.ok) {
     const errorBody = await response.text();
