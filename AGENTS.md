@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Keep the About page's MCA and Udyam registration documents as labelled, redacted CDN website copies; their originals contain sensitive or outdated details, while the ISO certificate is displayed from the supplied original.
+- Send application emails only through authenticated TanStack server functions using the linked Resend gateway; status changes and email delivery are recorded with event-based idempotency so the database update remains successful if delivery fails.

@@ -343,6 +343,72 @@ export type Database = {
           },
         ]
       }
+      notification_logs: {
+        Row: {
+          application_id: string
+          candidate_id: string
+          created_at: string
+          delivery_status: string
+          email: string
+          error_message: string | null
+          id: string
+          new_status: Database["public"]["Enums"]["application_status"] | null
+          notification_type: string
+          previous_status:
+            | Database["public"]["Enums"]["application_status"]
+            | null
+          sent_at: string | null
+          status_history_id: string | null
+        }
+        Insert: {
+          application_id: string
+          candidate_id: string
+          created_at?: string
+          delivery_status?: string
+          email: string
+          error_message?: string | null
+          id?: string
+          new_status?: Database["public"]["Enums"]["application_status"] | null
+          notification_type: string
+          previous_status?:
+            | Database["public"]["Enums"]["application_status"]
+            | null
+          sent_at?: string | null
+          status_history_id?: string | null
+        }
+        Update: {
+          application_id?: string
+          candidate_id?: string
+          created_at?: string
+          delivery_status?: string
+          email?: string
+          error_message?: string | null
+          id?: string
+          new_status?: Database["public"]["Enums"]["application_status"] | null
+          notification_type?: string
+          previous_status?:
+            | Database["public"]["Enums"]["application_status"]
+            | null
+          sent_at?: string | null
+          status_history_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_logs_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_logs_status_history_id_fkey"
+            columns: ["status_history_id"]
+            isOneToOne: false
+            referencedRelation: "application_status_history"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null

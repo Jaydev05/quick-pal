@@ -7,3 +7,8 @@
 - [x] Refine the Jay Doshi founder section with a stronger editorial layout.
 - [x] Verify the updated About and founder sections on desktop and mobile.
 - [ ] Admin OTP email with 6-digit code + logo (needs email domain setup)
+- [x] Hide the “Edit with Lovable” badge on published pages.
+- [x] Link the Resend connection for server-side app emails.
+- [x] Add application confirmation and status-change email automation.
+- [x] Add duplicate-safe application email delivery history.
+- [ ] Verify the Resend sender domain and run live delivery tests.

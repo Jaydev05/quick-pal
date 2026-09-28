@@ -35,6 +35,12 @@ bun run dev
 > The `VITE_SUPABASE_*` variables are required — the browser build inlines them.
 > `SUPABASE_SERVICE_ROLE_KEY` is NOT available on Lovable Cloud; it is optional and only used for privileged server-side operations on a self-hosted backend.
 
+### Application emails
+
+Application confirmations and candidate status updates are sent on the server through the linked Resend connection. In Lovable, `LOVABLE_API_KEY` and `RESEND_API_KEY` are injected automatically. For a separate Hostinger deployment, add both to the server's environment settings and never expose them with a `VITE_` prefix.
+
+The sender is `Jaydev Associates <noreply@jaydevassociates.com>`. Verify `jaydevassociates.com` in Resend before testing live delivery. The email logo is served from `https://jaydevassociates.com/media/jaydev-logo.png`.
+
 ## Scripts
 
 | Command | Description |
@@ -124,6 +130,7 @@ In **hPanel → Websites → Manage → Node.js** (or Hostinger's Node.js app se
 2. Application root: the folder where you uploaded the project files.
 3. Entry point: `.output/server/index.mjs`.
 4. Environment variables: add every key from `.env` (including all `VITE_SUPABASE_*`).
+   Also add the server-only `LOVABLE_API_KEY` and `RESEND_API_KEY` values used by the linked Resend connection.
 5. Create the app, then point your domain to the app in hPanel.
 
 Hostinger restarts the Node process automatically; the app listens on the port Hostinger assigns via `PORT`/`NITRO_PORT`.

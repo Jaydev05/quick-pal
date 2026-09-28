@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Briefcase, Download, Inbox, Users } from "lucide-react";
 import { PortalShell, PageHeader } from "@/components/layout/PortalShell";
@@ -25,6 +26,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { fetchCategories, randomCode, signedResumeUrl } from "@/lib/api";
 import { downloadCsv, formatDate, slugify } from "@/lib/format";
+import { updateApplicationStatus } from "@/lib/application-email.functions";
 import {
   APPLICATION_STATUS,
   APPLICATION_STATUS_LIST,
@@ -517,6 +519,7 @@ function JobForm({
 function ApplicationsAdmin() {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState<string>("all");
+  const updateStatusAndNotify = useServerFn(updateApplicationStatus);
 
   const { data, error, isLoading } = useQuery({
     queryKey: ["admin-applications"],
@@ -544,14 +547,14 @@ function ApplicationsAdmin() {
 
   const setStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: ApplicationStatus }) => {
-      const { error } = await supabase
-        .from("applications")
-        .update({ current_status: status })
-        .eq("id", id);
-      if (error) throw error;
+      return updateStatusAndNotify({ data: { applicationId: id, status } });
     },
-    onSuccess: () => {
-      toast.success("Application updated");
+    onSuccess: (result) => {
+      if (result.updated && !result.notificationSent && !result.duplicate) {
+        toast.warning("Status updated, but the notification email could not be sent.");
+      } else if (result.updated) {
+        toast.success("Application updated and candidate notified");
+      }
       void queryClient.invalidateQueries({ queryKey: ["admin-applications"] });
     },
     onError: (e: Error) => toast.error(e.message),

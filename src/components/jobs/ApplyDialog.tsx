@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { FileText, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -18,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { fetchMyProfile, randomCode, type JobWithCategory } from "@/lib/api";
+import { sendApplicationConfirmation } from "@/lib/application-email.functions";
 
 const schema = z.object({
   full_name: z.string().trim().min(2, "Enter your full name").max(120),
@@ -41,6 +43,7 @@ export function ApplyDialog({
   const queryClient = useQueryClient();
   const [file, setFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const sendConfirmation = useServerFn(sendApplicationConfirmation);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -83,16 +86,25 @@ export function ApplyDialog({
       });
       if (profileError) throw profileError;
 
-      const { error } = await supabase.from("applications").insert({
-        job_id: job.id,
-        candidate_id: user.id,
-        application_code: randomCode("JA-APP"),
-        cover_note: values.cover_note || null,
-        resume_path: resumePath,
-      });
+      const { data: application, error } = await supabase
+        .from("applications")
+        .insert({
+          job_id: job.id,
+          candidate_id: user.id,
+          application_code: randomCode("JA-APP"),
+          cover_note: values.cover_note || null,
+          resume_path: resumePath,
+        })
+        .select("id")
+        .single();
       if (error) {
         if (error.code === "23505") throw new Error("You have already applied to this job");
         throw error;
+      }
+      try {
+        await sendConfirmation({ data: { applicationId: application.id } });
+      } catch (emailError) {
+        console.error("Application submitted, but confirmation email could not be requested", emailError);
       }
     },
     onSuccess: () => {
