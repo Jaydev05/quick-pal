@@ -189,12 +189,12 @@ function JobDetailPage() {
             <ArrowLeft /> All jobs
           </Link>
         </Button>
-        <div className="mt-5 flex flex-wrap items-start justify-between gap-6">
-          <div className="max-w-2xl">
-            <p className="eyebrow">
+         <div className="mt-5 flex min-w-0 flex-wrap items-start justify-between gap-6">
+           <div className="min-w-0 max-w-2xl">
+             <p className="eyebrow [overflow-wrap:anywhere]">
               {job.categories?.name ?? job.department ?? "Opening"} · {job.job_code}
             </p>
-            <h1 className="font-display mt-3 text-3xl font-bold text-foreground md:text-4xl">
+             <h1 className="font-display mt-3 text-3xl font-bold text-foreground [overflow-wrap:anywhere] md:text-4xl">
               {job.title}
             </h1>
             <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
@@ -211,15 +211,16 @@ function JobDetailPage() {
               <JobStatusBadge status={job.status as JobStatus} />
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Button size="lg" onClick={handleApply} disabled={!open || Boolean(existingApplication)}>
+           <div className="grid w-full min-w-0 grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap">
+             <Button className="col-span-2 min-w-0 whitespace-normal sm:col-auto" size="lg" onClick={handleApply} disabled={!open || Boolean(existingApplication)}>
               {existingApplication
                 ? `Applied · ${existingApplication.application_code}`
                 : open
                   ? "Apply Now"
                   : "Applications Closed"}
             </Button>
-            <Button
+             <Button
+               className="min-w-0"
               variant="outline"
               size="lg"
               onClick={() =>
@@ -230,7 +231,7 @@ function JobDetailPage() {
             >
               {saved ? <BookmarkCheck /> : <BookmarkPlus />} {saved ? "Saved" : "Save"}
             </Button>
-            <Button variant="ghost" size="lg" onClick={() => void share()}>
+             <Button className="min-w-0" variant="ghost" size="lg" onClick={() => void share()}>
               <Share2 /> Share
             </Button>
           </div>
