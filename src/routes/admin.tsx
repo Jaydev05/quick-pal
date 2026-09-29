@@ -147,7 +147,7 @@ function CandidatesAdmin() {
   const { data, error, isLoading } = useQuery({
     queryKey: ["admin-candidates"],
     queryFn: () => loadCandidates(),
-    refetchInterval: 10000,
+    staleTime: 30000,
   });
 
   const candidates = data ?? [];
@@ -321,9 +321,13 @@ function CandidateDetails({ candidate }: { candidate: AdminCandidate }) {
         <Button
           variant="outline"
           onClick={async () => {
+            const resumeWindow = window.open("", "_blank");
             const url = await signedResumeUrl(profile.resumePath);
-            if (url) window.open(url, "_blank", "noopener");
-            else toast.error("Resume unavailable");
+            if (url && resumeWindow) resumeWindow.location.href = url;
+            else {
+              resumeWindow?.close();
+              toast.error("Resume unavailable");
+            }
           }}
         >
           <FileText /> Open {profile.resumeName ?? "resume"}

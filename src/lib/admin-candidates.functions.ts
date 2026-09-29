@@ -59,11 +59,12 @@ export const getAdminCandidates = createServerFn({ method: "GET" })
       user_metadata?: { full_name?: unknown; phone?: unknown };
     }> = [];
 
-    for (let page = 1; ; page += 1) {
+    for (let page = 1; page <= 50; page += 1) {
       const { data, error } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 1000 });
       if (error) throw new Error("Could not load registered accounts");
       users.push(...data.users);
       if (data.users.length < 1000) break;
+      if (page === 50) throw new Error("Candidate directory is too large to load at once");
     }
 
     const [profilesResult, rolesResult, applicationsResult, savedJobsResult] = await Promise.all([
@@ -101,7 +102,13 @@ export const getAdminCandidates = createServerFn({ method: "GET" })
           typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name : "";
         const metadataPhone =
           typeof user.user_metadata?.phone === "string" ? user.user_metadata.phone : null;
-        const category = profile?.categories as unknown as { name?: string } | null | undefined;
+        const rawCategory = profile?.categories as unknown;
+        const category = Array.isArray(rawCategory)
+          ? rawCategory[0] as { name?: string } | undefined
+          : rawCategory as { name?: string } | null | undefined;
+        const skills = Array.isArray(profile?.skills)
+          ? profile.skills.filter((skill): skill is string => typeof skill === "string")
+          : [];
 
         return {
           id: user.id,
@@ -120,7 +127,7 @@ export const getAdminCandidates = createServerFn({ method: "GET" })
             currentJobTitle: profile?.current_job_title ?? null,
             experienceYears: profile?.experience_years ?? null,
             education: profile?.education ?? null,
-            skills: profile?.skills ?? [],
+            skills,
             preferredLocation: profile?.preferred_location ?? null,
             preferredCategory: category?.name ?? null,
             expectedSalary: profile?.expected_salary ?? null,
