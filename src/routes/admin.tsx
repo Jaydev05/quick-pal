@@ -3,12 +3,19 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Briefcase, Download, Inbox, Users } from "lucide-react";
+import { Briefcase, Download, Eye, FileText, Inbox, Search, Users } from "lucide-react";
 import { PortalShell, PageHeader } from "@/components/layout/PortalShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -25,8 +32,9 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { fetchCategories, randomCode, signedResumeUrl } from "@/lib/api";
-import { downloadCsv, formatDate, slugify } from "@/lib/format";
+import { downloadCsv, formatDate, formatDateTime, formatMoney, slugify } from "@/lib/format";
 import { updateApplicationStatus } from "@/lib/application-email.functions";
+import { getAdminCandidates, type AdminCandidate } from "@/lib/admin-candidates.functions";
 import {
   ADMIN_APPLICATION_STATUS_LIST,
   APPLICATION_STATUS,
@@ -104,12 +112,13 @@ function AdminPage() {
     >
       <PageHeader
         title="Recruitment console"
-        description="Manage job postings, applications and service enquiries."
+        description="Manage jobs, candidate accounts, applications and service enquiries."
       />
       <Tabs defaultValue="applications">
         <TabsList>
           <TabsTrigger value="jobs">Jobs</TabsTrigger>
           <TabsTrigger value="applications">Applications</TabsTrigger>
+          <TabsTrigger value="candidates">Candidates</TabsTrigger>
           <TabsTrigger value="enquiries">Enquiries</TabsTrigger>
         </TabsList>
         <TabsContent value="jobs" className="pt-6">
@@ -118,11 +127,213 @@ function AdminPage() {
         <TabsContent value="applications" className="pt-6">
           <ApplicationsAdmin />
         </TabsContent>
+        <TabsContent value="candidates" className="pt-6">
+          <CandidatesAdmin />
+        </TabsContent>
         <TabsContent value="enquiries" className="pt-6">
           <EnquiriesAdmin />
         </TabsContent>
       </Tabs>
     </PortalShell>
+  );
+}
+
+/* ---------------- Candidates ---------------- */
+
+function CandidatesAdmin() {
+  const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<AdminCandidate | null>(null);
+  const loadCandidates = useServerFn(getAdminCandidates);
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["admin-candidates"],
+    queryFn: () => loadCandidates(),
+    staleTime: 30000,
+  });
+
+  const candidates = data ?? [];
+  const needle = search.trim().toLowerCase();
+  const rows = candidates.filter((candidate) => {
+    if (!needle) return true;
+    const profile = candidate.profile;
+    return [
+      profile.fullName,
+      candidate.email,
+      candidate.phone,
+      profile.city,
+      profile.state,
+      profile.currentJobTitle,
+      profile.education,
+      profile.preferredLocation,
+      profile.preferredCategory,
+      ...profile.skills,
+    ].some((value) => value?.toLowerCase().includes(needle));
+  });
+
+  const exportRows = rows.map((candidate) => ({
+    name: candidate.profile.fullName,
+    email: candidate.email ?? "",
+    phone: candidate.phone ?? "",
+    city: candidate.profile.city ?? "",
+    state: candidate.profile.state ?? "",
+    country: candidate.profile.country ?? "",
+    current_job_title: candidate.profile.currentJobTitle ?? "",
+    experience_years: candidate.profile.experienceYears ?? "",
+    education: candidate.profile.education ?? "",
+    skills: candidate.profile.skills.join(", "),
+    preferred_location: candidate.profile.preferredLocation ?? "",
+    preferred_category: candidate.profile.preferredCategory ?? "",
+    expected_salary: candidate.profile.expectedSalary ?? "",
+    resume: candidate.profile.resumeName ?? "",
+    applications: candidate.applicationCount,
+    saved_jobs: candidate.savedJobCount,
+    account_created: candidate.createdAt,
+    last_sign_in: candidate.lastSignInAt ?? "",
+  }));
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="relative w-full max-w-sm">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            className="pl-9"
+            placeholder="Search candidates"
+            aria-label="Search candidates"
+          />
+        </div>
+        <div className="flex items-center gap-3">
+          <p className="text-sm text-muted-foreground">
+            {rows.length} of {candidates.length} accounts
+          </p>
+          <Button variant="outline" disabled={rows.length === 0} onClick={() => downloadCsv("candidates.csv", exportRows)}>
+            <Download /> Export
+          </Button>
+        </div>
+      </div>
+
+      {isLoading && <p className="rounded-xl border border-border p-4 text-sm text-muted-foreground">Loading candidates…</p>}
+      {error && (
+        <p className="rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+          Could not load candidate accounts: {error.message}
+        </p>
+      )}
+
+      <div className="overflow-x-auto rounded-xl border border-border">
+        <table className="w-full min-w-[820px] text-sm">
+          <thead className="bg-secondary/60 text-left text-xs uppercase">
+            <tr>
+              <Th>Candidate</Th>
+              <Th>Location</Th>
+              <Th>Experience</Th>
+              <Th>Activity</Th>
+              <Th>Joined</Th>
+              <Th>Profile</Th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {rows.map((candidate) => (
+              <tr key={candidate.id}>
+                <Td>
+                  <p className="font-medium text-foreground">{candidate.profile.fullName}</p>
+                  <p className="text-xs">{candidate.email ?? "No email"}</p>
+                  <p className="text-xs">{candidate.phone ?? "No phone"}</p>
+                </Td>
+                <Td>{[candidate.profile.city, candidate.profile.state].filter(Boolean).join(", ") || "—"}</Td>
+                <Td>
+                  <p>{candidate.profile.currentJobTitle ?? "—"}</p>
+                  <p className="text-xs">{candidate.profile.experienceYears != null ? `${candidate.profile.experienceYears} years` : "Experience not added"}</p>
+                </Td>
+                <Td>
+                  <p>{candidate.applicationCount} applications</p>
+                  <p className="text-xs">{candidate.savedJobCount} saved jobs</p>
+                </Td>
+                <Td>{formatDate(candidate.createdAt)}</Td>
+                <Td>
+                  <Button size="sm" variant="outline" onClick={() => setSelected(candidate)}>
+                    <Eye /> View
+                  </Button>
+                </Td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {!isLoading && !error && rows.length === 0 && (
+          <p className="p-8 text-center text-sm text-muted-foreground">
+            {needle ? "No candidates match your search." : "No candidate accounts yet."}
+          </p>
+        )}
+      </div>
+
+      <Dialog open={Boolean(selected)} onOpenChange={(open) => !open && setSelected(null)}>
+        <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
+          {selected && <CandidateDetails candidate={selected} />}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function CandidateDetails({ candidate }: { candidate: AdminCandidate }) {
+  const profile = candidate.profile;
+  const details = [
+    ["Email", candidate.email],
+    ["Phone", candidate.phone],
+    ["Location", [profile.city, profile.state, profile.country].filter(Boolean).join(", ")],
+    ["Current job title", profile.currentJobTitle],
+    ["Experience", profile.experienceYears != null ? `${profile.experienceYears} years` : null],
+    ["Education", profile.education],
+    ["Preferred location", profile.preferredLocation],
+    ["Preferred category", profile.preferredCategory],
+    ["Expected salary", profile.expectedSalary != null ? `${formatMoney(profile.expectedSalary)} / year` : null],
+    ["Account created", formatDateTime(candidate.createdAt)],
+    ["Account confirmed", formatDateTime(candidate.confirmedAt)],
+    ["Last sign-in", formatDateTime(candidate.lastSignInAt)],
+    ["Profile updated", formatDateTime(profile.updatedAt)],
+  ];
+
+  return (
+    <>
+      <DialogHeader>
+        <DialogTitle className="font-display text-2xl">{profile.fullName}</DialogTitle>
+        <DialogDescription>
+          Complete account profile · {candidate.applicationCount} applications · {candidate.savedJobCount} saved jobs
+        </DialogDescription>
+      </DialogHeader>
+      <div className="grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2">
+        {details.map(([label, value]) => (
+          <div key={label} className="bg-background p-4">
+            <p className="text-xs font-semibold uppercase text-muted-foreground">{label}</p>
+            <p className="mt-1 break-words text-sm text-foreground">{value || "Not provided"}</p>
+          </div>
+        ))}
+      </div>
+      <div>
+        <p className="text-xs font-semibold uppercase text-muted-foreground">Skills</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {profile.skills.length > 0 ? profile.skills.map((skill) => (
+            <span key={skill} className="rounded-md border border-border bg-secondary px-2.5 py-1 text-xs text-foreground">{skill}</span>
+          )) : <p className="text-sm text-muted-foreground">Not provided</p>}
+        </div>
+      </div>
+      {profile.resumePath && (
+        <Button
+          variant="outline"
+          onClick={async () => {
+            const resumeWindow = window.open("", "_blank");
+            const url = await signedResumeUrl(profile.resumePath);
+            if (url && resumeWindow) resumeWindow.location.href = url;
+            else {
+              resumeWindow?.close();
+              toast.error("Resume unavailable");
+            }
+          }}
+        >
+          <FileText /> Open {profile.resumeName ?? "resume"}
+        </Button>
+      )}
+    </>
   );
 }
 
