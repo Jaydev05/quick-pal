@@ -14,3 +14,5 @@
 - [ ] Verify the Resend sender domain and run live delivery tests.
 - [x] Fix admin application status updates returning “Forbidden”.
 - [x] Simplify the admin application status menu to essential stages.
+
+- [ ] Add an admin-only directory of all registered accounts and complete candidate profiles.
