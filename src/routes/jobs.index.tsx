@@ -166,8 +166,8 @@ function JobsPage() {
       </Section>
 
       <Section className="pt-10">
-        <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
-          <aside className="h-fit rounded-xl border border-border bg-card p-5 lg:sticky lg:top-24">
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
+          <aside className="min-w-0 h-fit rounded-xl border border-border bg-card p-5 lg:sticky lg:top-24">
             <h2 className="font-display flex items-center gap-2 text-sm font-semibold text-card-foreground">
               <SlidersHorizontal className="size-4 text-gold" /> Filters
             </h2>
@@ -218,7 +218,7 @@ function JobsPage() {
             </div>
           </aside>
 
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
                 {isLoading ? "Loading roles…" : `${total} ${total === 1 ? "job" : "jobs"} found`}
@@ -228,7 +228,7 @@ function JobsPage() {
               )}
             </div>
 
-            <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-5 grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5 md:grid-cols-2 xl:grid-cols-3">
               {isLoading && Array.from({ length: 6 }).map((_, i) => <JobCardSkeleton key={i} />)}
               {data?.jobs.map((job) => <JobCard key={job.id} job={job} />)}
             </div>

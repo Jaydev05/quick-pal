@@ -16,3 +16,4 @@
 - [x] Simplify the admin application status menu to essential stages.
 
 - [x] Add an admin-only directory of all registered accounts and complete candidate profiles.
+- [ ] Fix the mobile jobs list overflow and keep job details and footer readable on narrow screens.

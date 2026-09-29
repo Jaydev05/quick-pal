@@ -17,16 +17,16 @@ export function Footer() {
               <MapPin className="mt-0.5 size-4 shrink-0 text-gold" />
               <span>488, C/O Jaydev Associates LLP, Near SBI Bank, A/P Goregaon, Tal. Mangaon, Raigad, Maharashtra – 402103, India</span>
             </p>
-            <p className="flex items-center gap-2">
-              <Phone className="size-4 shrink-0 text-gold" />
-              <span className="flex items-center gap-3">
+            <div className="flex min-w-0 items-start gap-2">
+              <Phone className="mt-0.5 size-4 shrink-0 text-gold" />
+              <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
                 <a href={COMPANY.phoneHref} className="hover:text-foreground">
                   {COMPANY.phone}
                 </a>
                 <span className="text-border" aria-hidden="true">|</span>
                 <a href="tel:+919322021991" className="hover:text-foreground">+91 9322021991</a>
               </span>
-            </p>
+            </div>
             <p className="flex items-center gap-2">
               <Mail className="size-4 shrink-0 text-gold" />
               <a href="mailto:info@jaydevassociates.com" className="hover:text-foreground">

@@ -11,22 +11,22 @@ export function JobCard({ job, className }: { job: JobWithCategory; className?: 
   return (
     <article
       className={cn(
-        "group flex h-full flex-col rounded-xl border border-border bg-card p-5 shadow-card transition-all hover:-translate-y-0.5 hover:border-gold/50",
+        "group flex h-full min-w-0 flex-col rounded-lg border border-border bg-card p-5 shadow-card transition-all hover:-translate-y-0.5 hover:border-gold/50",
         className,
       )}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+      <div className="flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:justify-between">
+        <div className="min-w-0 max-w-full">
+          <p className="break-words text-xs font-medium tracking-wide text-muted-foreground uppercase [overflow-wrap:anywhere]">
             {job.categories?.name ?? job.department ?? "Open Role"} · {job.job_code}
           </p>
-          <h3 className="font-display mt-1 truncate text-lg font-semibold text-card-foreground">
+          <h3 className="font-display mt-1 text-lg font-semibold text-card-foreground [overflow-wrap:anywhere]">
             <Link to="/jobs/$slug" params={{ slug: job.slug }} className="hover:text-gold">
               {job.title}
             </Link>
           </h3>
         </div>
-        <JobStatusBadge status={job.status as JobStatus} />
+        <JobStatusBadge status={job.status as JobStatus} className="max-w-full shrink-0" />
       </div>
 
       <dl className="mt-4 grid grid-cols-1 gap-2 text-sm text-muted-foreground sm:grid-cols-2">
@@ -55,7 +55,7 @@ export function JobCard({ job, className }: { job: JobWithCategory; className?: 
           {job.skills.slice(0, 4).map((s) => (
             <li
               key={s}
-              className="rounded-full bg-secondary px-2.5 py-1 text-xs text-secondary-foreground"
+              className="max-w-full break-words rounded-full bg-secondary px-2.5 py-1 text-xs text-secondary-foreground [overflow-wrap:anywhere]"
             >
               {s}
             </li>
@@ -63,7 +63,7 @@ export function JobCard({ job, className }: { job: JobWithCategory; className?: 
         </ul>
       )}
 
-      <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
+      <div className="mt-5 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t border-border pt-4">
         <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <Clock className="size-3.5" /> {relativeDate(job.created_at)}
         </span>
