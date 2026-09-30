@@ -17,3 +17,5 @@
 
 - [x] Add an admin-only directory of all registered accounts and complete candidate profiles.
 - [x] Fix the mobile jobs list overflow and keep job details and footer readable on narrow screens.
+- [x] Add the six-course Fire & Industrial Safety page with the supplied training association logo.
+- [ ] Verify the Courses page and navigation on desktop and mobile.

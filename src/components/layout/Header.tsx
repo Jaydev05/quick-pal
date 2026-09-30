@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 const NAV = [
   { to: "/", label: "Home" },
   { to: "/jobs", label: "Jobs" },
+  { to: "/courses", label: "Courses" },
   { to: "/services", label: "Services" },
   { to: "/about", label: "About Us" },
   { to: "/why-jaydev-associates", label: "Why Jaydev" },
