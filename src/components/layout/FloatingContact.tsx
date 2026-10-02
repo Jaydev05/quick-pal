@@ -1,9 +1,47 @@
-import { Phone } from "lucide-react";
+import { ExternalLink, Phone, UsersRound } from "lucide-react";
 import { COMPANY, whatsappLink } from "@/lib/site";
+import { JOB_ALERT_GROUPS } from "@/lib/job-alert-groups";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export function FloatingContact() {
   return (
-    <div className="fixed right-4 bottom-4 z-40 flex flex-col gap-2 md:right-6 md:bottom-6">
+    <div className="fixed right-4 bottom-4 z-40 flex flex-col items-end gap-2 md:right-6 md:bottom-6">
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="secondary"
+            aria-label="View WhatsApp job alert groups"
+            title="Job alert groups"
+            className="h-11 gap-2 border border-gold/40 bg-card px-3 text-card-foreground shadow-card hover:bg-accent sm:px-4"
+          >
+            <UsersRound className="size-4" />
+            <span className="text-xs font-semibold sm:text-sm">Job alert groups</span>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          side="top"
+          align="end"
+          sideOffset={12}
+          className="max-h-[min(70dvh,30rem)] w-[min(21rem,calc(100vw-2rem))] overflow-y-auto border-border bg-popover p-0 shadow-card"
+        >
+          <div className="border-b border-border px-4 py-3">
+            <h2 className="font-display text-base font-bold text-popover-foreground">WhatsApp job alert groups</h2>
+          </div>
+          <ul className="divide-y divide-border">
+            {JOB_ALERT_GROUPS.map((group) => (
+              <li key={group.href} className="min-w-0 space-y-3 px-4 py-4">
+                <p className="min-w-0 break-words text-sm font-semibold text-popover-foreground">{group.name}</p>
+                <Button asChild size="sm" className="w-full bg-success text-success-foreground hover:bg-success/90">
+                  <a href={group.href} target="_blank" rel="noreferrer noopener" aria-label={`${group.label}: ${group.name}`}>
+                    {group.label} <ExternalLink />
+                  </a>
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </PopoverContent>
+      </Popover>
       <a
         href={whatsappLink("Hello Jaydev Associates, I would like to know more.")}
         target="_blank"

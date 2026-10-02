@@ -18,6 +18,7 @@ import { JobCard, JobCardSkeleton } from "@/components/jobs/JobCard";
 import { Button } from "@/components/ui/button";
 import { fetchFeaturedJobs } from "@/lib/api";
 import { COMPANY, INDUSTRIES, SERVICES, WHY_US } from "@/lib/site";
+import { JOB_ALERT_GROUPS } from "@/lib/job-alert-groups";
 import heroImage from "@/assets/hero-office.jpg";
 
 export const Route = createFileRoute("/")({
@@ -49,14 +50,6 @@ const SERVICE_ICONS = {
   "it-solutions": Cpu,
   "real-estate": Home,
 } as const;
-
-const JOB_ALERT_GROUPS = [
-  {
-    name: "Jaydev Associates Job Alerts",
-    href: "https://chat.whatsapp.com/HlpJCsrVHoz9DH4qqskX3U",
-    label: "Join WhatsApp Group",
-  },
-] as const;
 
 function HomePage() {
   const { data: jobs, isLoading } = useQuery({

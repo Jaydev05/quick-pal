@@ -19,3 +19,4 @@
 - [x] Fix the mobile jobs list overflow and keep job details and footer readable on narrow screens.
 - [x] Add the six-course Fire & Industrial Safety page with the supplied training association logo.
 - [x] Verify the Courses page and navigation on desktop and mobile.
+- [x] Add a shared WhatsApp job-alert group list for the home page and a floating groups menu.
