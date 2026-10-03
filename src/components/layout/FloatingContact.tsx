@@ -35,7 +35,7 @@ export function FloatingContact() {
             variant="secondary"
             aria-label="View WhatsApp job alert groups"
             title="Job alert groups"
-            className={`h-12 min-w-12 gap-0 overflow-hidden rounded-md border border-gold/50 bg-ink text-gold shadow-card transition-[padding,background-color,border-color] duration-300 hover:bg-ink/90 focus-visible:ring-gold motion-reduce:transition-none ${showLabel ? "px-3" : "px-0"}`}
+            className={`h-12 min-w-12 gap-0 overflow-hidden rounded-md border border-gold/50 bg-card text-card-foreground shadow-card transition-[padding,background-color,border-color] duration-300 hover:bg-secondary focus-visible:ring-gold motion-reduce:transition-none ${showLabel ? "px-3" : "px-0"}`}
           >
             <UsersRound className="size-5 shrink-0" />
             <span
