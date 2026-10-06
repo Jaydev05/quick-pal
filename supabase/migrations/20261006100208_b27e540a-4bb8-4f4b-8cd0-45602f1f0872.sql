@@ -1,0 +1,1 @@
+CREATE POLICY "Server manages resume analysis service state" ON public.resume_analysis_service_state FOR ALL TO service_role USING (true) WITH CHECK (true);
