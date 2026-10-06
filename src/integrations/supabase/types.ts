@@ -504,6 +504,7 @@ export type Database = {
           phone: string | null
           preferred_category_id: string | null
           preferred_location: string | null
+          professional_summary: string | null
           resume_name: string | null
           resume_path: string | null
           resume_uploaded_at: string | null
@@ -525,6 +526,7 @@ export type Database = {
           phone?: string | null
           preferred_category_id?: string | null
           preferred_location?: string | null
+          professional_summary?: string | null
           resume_name?: string | null
           resume_path?: string | null
           resume_uploaded_at?: string | null
@@ -546,6 +548,7 @@ export type Database = {
           phone?: string | null
           preferred_category_id?: string | null
           preferred_location?: string | null
+          professional_summary?: string | null
           resume_name?: string | null
           resume_path?: string | null
           resume_uploaded_at?: string | null
@@ -562,6 +565,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      resume_analysis_service_state: {
+        Row: {
+          feature: string
+          message: string | null
+          paused: boolean
+          status_code: number | null
+          updated_at: string
+        }
+        Insert: {
+          feature: string
+          message?: string | null
+          paused?: boolean
+          status_code?: number | null
+          updated_at?: string
+        }
+        Update: {
+          feature?: string
+          message?: string | null
+          paused?: boolean
+          status_code?: number | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       saved_jobs: {
         Row: {
