@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { FileText, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import {
@@ -13,22 +12,22 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { CandidateProfileFields } from "@/components/jobs/CandidateProfileFields";
+import { ResumeUpload } from "@/components/jobs/ResumeUpload";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { fetchMyProfile, randomCode, type JobWithCategory } from "@/lib/api";
 import { sendApplicationConfirmation } from "@/lib/application-email.functions";
+import { fillEmptyProfileFields, readCandidateProfileForm, type UploadedResume } from "@/lib/resume-profile";
 
 const schema = z.object({
   full_name: z.string().trim().min(2, "Enter your full name").max(120),
   phone: z.string().trim().min(8, "Enter a valid phone number").max(20),
-  experience_years: z.number().min(0).max(60),
+  experience_years: z.number().min(0).max(60).nullable(),
   cover_note: z.string().trim().max(1200).optional(),
 });
-
-const MAX_RESUME_MB = 5;
 
 export function ApplyDialog({
   job,
@@ -41,48 +40,38 @@ export function ApplyDialog({
 }) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const [file, setFile] = useState<File | null>(null);
+  const [resume, setResume] = useState<UploadedResume | null>(null);
+  const [reading, setReading] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const sendConfirmation = useServerFn(sendApplicationConfirmation);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
-    queryFn: () => fetchMyProfile(user!.id),
+    queryFn: () => user ? fetchMyProfile(user.id) : Promise.resolve(null),
     enabled: Boolean(user && open),
   });
 
   const apply = useMutation({
-    mutationFn: async (values: z.infer<typeof schema>) => {
+    mutationFn: async ({values, profileValues}: {values:z.infer<typeof schema>;profileValues:ReturnType<typeof readCandidateProfileForm>}) => {
       if (!user) throw new Error("Please sign in to apply");
-      let resumePath = profile?.resume_path ?? null;
-      let resumeName = profile?.resume_name ?? null;
-
-      if (file) {
-        if (file.size > MAX_RESUME_MB * 1024 * 1024)
-          throw new Error(`Resume must be under ${MAX_RESUME_MB}MB`);
-        const ext = file.name.split(".").pop()?.toLowerCase() ?? "pdf";
-        if (!["pdf", "doc", "docx"].includes(ext))
-          throw new Error("Resume must be a PDF or Word document");
-        const path = `${user.id}/${Date.now()}-resume.${ext}`;
-        const { error: uploadError } = await supabase.storage
-          .from("resumes")
-          .upload(path, file, { upsert: true });
-        if (uploadError) throw uploadError;
-        resumePath = path;
-        resumeName = file.name;
-      }
+      const resumePath = resume?.path ?? profile?.resume_path ?? null;
+      const resumeName = resume?.name ?? profile?.resume_name ?? null;
 
       if (!resumePath) throw new Error("Please upload your resume");
 
       const { error: profileError } = await supabase.from("profiles").upsert({
         id: user.id,
+        ...profileValues,
+        expected_salary: profile?.expected_salary ?? null,
+        preferred_location: profile?.preferred_location ?? null,
         full_name: values.full_name,
         phone: values.phone,
         email: user.email ?? null,
         experience_years: values.experience_years,
         resume_path: resumePath,
         resume_name: resumeName,
-        resume_uploaded_at: file ? new Date().toISOString() : profile?.resume_uploaded_at,
+        resume_uploaded_at: resume?.uploadedAt ?? profile?.resume_uploaded_at ?? null,
       });
       if (profileError) throw profileError;
 
@@ -110,7 +99,9 @@ export function ApplyDialog({
     onSuccess: () => {
       toast.success("Application submitted. Track it from your dashboard.");
       onOpenChange(false);
-      setFile(null);
+      setResume(null);
+      void queryClient.invalidateQueries({ queryKey: ["profile", user?.id] });
+      void queryClient.invalidateQueries({ queryKey: ["admin-candidates"] });
       void queryClient.invalidateQueries({ queryKey: ["my-application", job.id, user?.id] });
       void queryClient.invalidateQueries({ queryKey: ["my-applications"] });
     },
@@ -123,7 +114,7 @@ export function ApplyDialog({
     const parsed = schema.safeParse({
       full_name: fd.get("full_name"),
       phone: fd.get("phone"),
-      experience_years: Number(fd.get("experience_years") ?? 0),
+      experience_years: fd.get("experience_years") ? Number(fd.get("experience_years")) : null,
       cover_note: fd.get("cover_note") || undefined,
     });
     if (!parsed.success) {
@@ -133,7 +124,8 @@ export function ApplyDialog({
       return;
     }
     setErrors({});
-    apply.mutate(parsed.data);
+    try { apply.mutate({values:parsed.data,profileValues:readCandidateProfileForm(event.currentTarget)}); }
+    catch(error) { toast.error(error instanceof z.ZodError ? error.issues[0]?.message ?? "Check your profile details." : "Check your profile details."); }
   }
 
   return (
@@ -146,73 +138,10 @@ export function ApplyDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={onSubmit} className="space-y-4" noValidate>
-          <div>
-            <Label htmlFor="full_name">Full name *</Label>
-            <Input
-              id="full_name"
-              name="full_name"
-              className="mt-2"
-              defaultValue={profile?.full_name ?? ""}
-              maxLength={120}
-            />
-            {errors["full_name"] && (
-              <p className="mt-1.5 text-xs text-destructive">{errors["full_name"]}</p>
-            )}
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <Label htmlFor="phone">Phone *</Label>
-              <Input
-                id="phone"
-                name="phone"
-                className="mt-2"
-                defaultValue={profile?.phone ?? ""}
-                maxLength={20}
-              />
-              {errors["phone"] && (
-                <p className="mt-1.5 text-xs text-destructive">{errors["phone"]}</p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="experience_years">Experience (years) *</Label>
-              <Input
-                id="experience_years"
-                name="experience_years"
-                type="number"
-                min={0}
-                max={60}
-                step={1}
-                className="mt-2"
-                defaultValue={profile?.experience_years ?? 0}
-              />
-            </div>
-          </div>
-
-          <div>
-            <Label htmlFor="resume">Resume {profile?.resume_path ? "(optional)" : "*"}</Label>
-            <div className="mt-2 rounded-lg border border-dashed border-border p-4">
-              <Input
-                id="resume"
-                type="file"
-                accept=".pdf,.doc,.docx"
-                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              />
-              <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
-                {file ? (
-                  <>
-                    <Upload className="size-3.5" /> {file.name}
-                  </>
-                ) : profile?.resume_name ? (
-                  <>
-                    <FileText className="size-3.5" /> Using saved resume: {profile.resume_name}
-                  </>
-                ) : (
-                  <>PDF or Word, max {MAX_RESUME_MB}MB</>
-                )}
-              </p>
-            </div>
-          </div>
+        <form ref={formRef} onSubmit={onSubmit} className="space-y-4" noValidate>
+          {user && <ResumeUpload userId={user.id} savedName={resume?.name ?? profile?.resume_name} onUploaded={setResume} onBusyChange={setReading} disabled={apply.isPending} onExtracted={(values) => fillEmptyProfileFields(formRef.current,values)} />}
+          <CandidateProfileFields profile={profile} application />
+          {Object.entries(errors).map(([field,message]) => <p key={field} className="text-xs text-destructive">{message}</p>)}
 
           <div>
             <Label htmlFor="cover_note">Cover note (optional)</Label>
@@ -230,7 +159,7 @@ export function ApplyDialog({
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={apply.isPending}>
+            <Button type="submit" disabled={apply.isPending || reading}>
               {apply.isPending ? "Submitting…" : "Submit Application"}
             </Button>
           </DialogFooter>

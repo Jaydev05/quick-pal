@@ -35,6 +35,7 @@ import { fetchCategories, randomCode, signedResumeUrl } from "@/lib/api";
 import { downloadCsv, formatDate, formatDateTime, formatMoney, slugify } from "@/lib/format";
 import { updateApplicationStatus } from "@/lib/application-email.functions";
 import { getAdminCandidates, type AdminCandidate } from "@/lib/admin-candidates.functions";
+import { resumeAnalysisAccess } from "@/lib/resume-analysis.functions";
 import {
   ADMIN_APPLICATION_STATUS_LIST,
   APPLICATION_STATUS,
@@ -144,6 +145,8 @@ function CandidatesAdmin() {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<AdminCandidate | null>(null);
   const loadCandidates = useServerFn(getAdminCandidates);
+  const resumeAnalysis = useServerFn(resumeAnalysisAccess);
+  const [resuming, setResuming] = useState(false);
   const { data, error, isLoading } = useQuery({
     queryKey: ["admin-candidates"],
     queryFn: () => loadCandidates(),
@@ -163,6 +166,7 @@ function CandidatesAdmin() {
       profile.state,
       profile.currentJobTitle,
       profile.education,
+      profile.professionalSummary,
       profile.preferredLocation,
       profile.preferredCategory,
       ...profile.skills,
@@ -179,6 +183,7 @@ function CandidatesAdmin() {
     current_job_title: candidate.profile.currentJobTitle ?? "",
     experience_years: candidate.profile.experienceYears ?? "",
     education: candidate.profile.education ?? "",
+    professional_summary: candidate.profile.professionalSummary ?? "",
     skills: candidate.profile.skills.join(", "),
     preferred_location: candidate.profile.preferredLocation ?? "",
     preferred_category: candidate.profile.preferredCategory ?? "",
@@ -210,6 +215,12 @@ function CandidatesAdmin() {
           <Button variant="outline" disabled={rows.length === 0} onClick={() => downloadCsv("candidates.csv", exportRows)}>
             <Download /> Export
           </Button>
+          <Button variant="outline" disabled={resuming} onClick={async () => {
+            setResuming(true);
+            try { await resumeAnalysis(); toast.success("Resume autofill enabled. Candidates can try a fresh upload."); }
+            catch { toast.error("Could not enable resume autofill."); }
+            finally { setResuming(false); }
+          }}>Resume autofill</Button>
         </div>
       </div>
 
@@ -316,6 +327,10 @@ function CandidateDetails({ candidate }: { candidate: AdminCandidate }) {
             <span key={skill} className="rounded-md border border-border bg-secondary px-2.5 py-1 text-xs text-foreground">{skill}</span>
           )) : <p className="text-sm text-muted-foreground">Not provided</p>}
         </div>
+      </div>
+      <div>
+        <p className="text-xs font-semibold uppercase text-muted-foreground">Professional summary</p>
+        <p className="mt-2 whitespace-pre-wrap break-words text-sm text-foreground">{profile.professionalSummary || "Not provided"}</p>
       </div>
       {profile.resumePath && (
         <Button
