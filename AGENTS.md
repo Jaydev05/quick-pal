@@ -14,3 +14,6 @@
 - Read registered candidate accounts for the admin directory only through an admin-authorized server function; authentication records must never be queried from browser code.
 - Keep professional safety education on the dedicated `/courses` public route; Jaydev Associates remains the primary brand and the training institute is shown only by its supplied logo and MSME registration number.
 - Keep WhatsApp job-alert group links in one shared list for the home section and floating menu, so future groups appear in both places.
+- Use a shared resume upload and profile-field flow for profile/application forms; authenticated analysis reads only the caller's private resume and fills empty editable fields.
+- Extract PDF resumes through streamed Lovable AI Responses and DOCX via browser-safe text extraction; legacy DOC retains manual upload support because binary conversion is unavailable in the server runtime.
+- Store professional summaries in existing profiles and AI access pauses in server-only service state, so candidate visibility stays consistent and blocked requests do not repeat.

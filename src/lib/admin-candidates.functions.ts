@@ -18,6 +18,7 @@ export type AdminCandidate = {
     currentJobTitle: string | null;
     experienceYears: number | null;
     education: string | null;
+    professionalSummary: string | null;
     skills: string[];
     preferredLocation: string | null;
     preferredCategory: string | null;
@@ -127,6 +128,7 @@ export const getAdminCandidates = createServerFn({ method: "GET" })
             currentJobTitle: profile?.current_job_title ?? null,
             experienceYears: profile?.experience_years ?? null,
             education: profile?.education ?? null,
+            professionalSummary: profile?.professional_summary ?? null,
             skills,
             preferredLocation: profile?.preferred_location ?? null,
             preferredCategory: category?.name ?? null,
