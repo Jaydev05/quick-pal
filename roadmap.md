@@ -21,7 +21,7 @@
 - [x] Verify the Courses page and navigation on desktop and mobile.
 - [x] Add a shared WhatsApp job-alert group list for the home page and a floating groups menu.
 - [x] Make the floating groups button compact between interactions and refine its group card.
-- [ ] Extract candidate details from uploaded resumes and prefill a reviewable profile.
-- [ ] Save the professional summary and show the completed profile to the administrator.
+- [x] Extract candidate details from uploaded resumes and prefill a reviewable profile.
+- [x] Save the professional summary and show the completed profile to the administrator.
 - [ ] Verify resume autofill from both profile and job-application uploads.
-- [ ] Send the two branded SOFTCON interview emails from info@jaydevassociates.com to omdoshi45@gmail.com.
+- [x] Send the two branded SOFTCON interview emails from info@jaydevassociates.com to omdoshi45@gmail.com.
