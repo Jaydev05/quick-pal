@@ -1,6 +1,7 @@
 # Roadmap
 
 - [ ] Add admin interview email history and previews of both SOFTCON emails, with truthful delivery states.
+- [ ] Complete and verify resume autofill when candidates create their profile.
 
 - [x] Add the supplied ISO 9001:2015 certificate and preview.
 - [x] Present MCA, Udyam, and ISO as a polished three-document section.
