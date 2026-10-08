@@ -17,3 +17,4 @@
 - Use a shared resume upload and profile-field flow for profile/application forms; authenticated analysis reads only the caller's private resume and fills empty editable fields.
 - Extract PDF resumes through streamed Lovable AI Responses and DOCX via browser-safe text extraction; legacy DOC retains manual upload support because binary conversion is unavailable in the server runtime.
 - Store professional summaries in existing profiles and AI access pauses in server-only service state, so candidate visibility stays consistent and blocked requests do not repeat.
+- Store interview email snapshots in existing admin activity records and read through an admin-authorized server function; acceptance never implies confirmed delivery.

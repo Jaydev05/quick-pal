@@ -138,4 +138,15 @@ export async function sendApplicationEmail(data: EmailData, kind: "confirmation"
     console.error(`Resend email failed [${response.status}]: ${errorBody}`);
     throw new Error(`Email provider rejected the request with status ${response.status}`);
   }
+  const receipt = await response.json() as { id?: string };
+  if (kind === "status" && data.newStatus === "interview_scheduled") {
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { error } = await supabaseAdmin.from("admin_activity_logs").insert({
+        action: "interview_email_sent", entity_type: "interview_email", entity_id: receipt.id ?? data.idempotencyKey,
+        details: { recipient: data.to, subject: email.subject, html: email.html, sentAt: new Date().toISOString(), status: "accepted", providerId: receipt.id ?? null },
+      });
+      if (error) console.error("Interview email history could not be recorded", error.code);
+    } catch { console.error("Interview email history could not be recorded"); }
+  }
 }

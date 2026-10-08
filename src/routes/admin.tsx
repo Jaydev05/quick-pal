@@ -36,6 +36,7 @@ import { downloadCsv, formatDate, formatDateTime, formatMoney, slugify } from "@
 import { updateApplicationStatus } from "@/lib/application-email.functions";
 import { getAdminCandidates, type AdminCandidate } from "@/lib/admin-candidates.functions";
 import { resumeAnalysisAccess } from "@/lib/resume-analysis.functions";
+import { InterviewEmailHistory } from "@/components/jobs/InterviewEmailHistory";
 import {
   ADMIN_APPLICATION_STATUS_LIST,
   APPLICATION_STATUS,
@@ -116,11 +117,12 @@ function AdminPage() {
         description="Manage jobs, candidate accounts, applications and service enquiries."
       />
       <Tabs defaultValue="applications">
-        <TabsList>
+        <TabsList className="h-auto flex-wrap">
           <TabsTrigger value="jobs">Jobs</TabsTrigger>
           <TabsTrigger value="applications">Applications</TabsTrigger>
           <TabsTrigger value="candidates">Candidates</TabsTrigger>
           <TabsTrigger value="enquiries">Enquiries</TabsTrigger>
+          <TabsTrigger value="emails">Email history</TabsTrigger>
         </TabsList>
         <TabsContent value="jobs" className="pt-6">
           <JobsAdmin />
@@ -133,6 +135,9 @@ function AdminPage() {
         </TabsContent>
         <TabsContent value="enquiries" className="pt-6">
           <EnquiriesAdmin />
+        </TabsContent>
+        <TabsContent value="emails" className="pt-6">
+          <InterviewEmailHistory />
         </TabsContent>
       </Tabs>
     </PortalShell>
