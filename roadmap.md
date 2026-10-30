@@ -1,9 +1,11 @@
 # Roadmap
 
-- [ ] Show clear employee password validation messages without raw error details.
-- [ ] Remove the candidate-view shortcut for employee administrators.
-- [ ] Add a super-admin-only branded Resend composer and record sending outcomes in email history.
-- [ ] Check receiving support without changing the existing mailbox or domain records.
+- [x] Show clear employee password validation messages without raw error details; validation tests pass.
+- [x] Remove the candidate-view shortcut for employee administrators; checked in an active employee session.
+- [x] Add a super-admin-only branded Resend composer and record sending outcomes in email history; sending, failure and duplicate safeguards tested.
+- [x] Check receiving support without changing the existing mailbox or domain records; Resend reports a sending-only key.
+- [ ] Verify composer preview and a live send in the super-admin panel (current preview session is an employee; requires super-admin OTP sign-in).
+- [ ] Enable receiving in the super-admin inbox (requires a Full access Resend key and explicit receiving-domain or mailbox-forwarding setup).
 
 - [x] Add secure code-only Resend OTP for the main administrator.
 - [x] Add employee creation, credential emails, mandatory password changes and access management.
