@@ -1,5 +1,9 @@
 # Roadmap
 
+- [ ] Make public job content available before scripts load, with job-specific search titles and descriptions.
+- [ ] Add canonical links and accurate job structured data; suppress expired or incomplete job markup.
+- [ ] Verify job search markup, public sitemap entries, and existing job actions without promising rankings.
+
 - [x] Show clear employee password validation messages without raw error details; validation tests pass.
 - [x] Remove the candidate-view shortcut for employee administrators; checked in an active employee session.
 - [x] Add a super-admin-only branded Resend composer and record sending outcomes in email history; sending, failure and duplicate safeguards tested.
