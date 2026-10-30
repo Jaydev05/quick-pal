@@ -16,7 +16,8 @@ export async function assertStaff(client: SupabaseClient<Database>, userId: stri
 
 export function temporaryPassword() {
   const bytes = crypto.getRandomValues(new Uint8Array(20));
-  return "Ja9!" + Array.from(bytes, (n) => "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"[n % 54]).join("");
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+  return "Ja9!" + Array.from(bytes, (n) => alphabet[n % alphabet.length]).join("");
 }
 export async function codeDigest(id: string, code: string) {
   const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${id}:${code}`));
