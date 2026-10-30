@@ -2,6 +2,9 @@ import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useServerFn } from "@tanstack/react-start";
+import { requestAdminCode, verifyAdminCode } from "@/lib/staff-access.functions";
+import { MAIN_ADMIN_EMAIL } from "@/lib/staff-access";
 import { KeyRound, Loader2, ShieldCheck } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
@@ -13,12 +16,12 @@ import { COMPANY } from "@/lib/site";
 
 type AuthSearch = { redirect?: string };
 
-export const ADMIN_EMAIL = "jaydevassociates25@gmail.com";
+export const ADMIN_EMAIL = MAIN_ADMIN_EMAIL;
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>): AuthSearch => ({
     redirect:
-      typeof search["redirect"] === "string" && search["redirect"].startsWith("/")
+      typeof search["redirect"] === "string" && search["redirect"].startsWith("/") && !search["redirect"].startsWith("//")
         ? search["redirect"]
         : undefined,
   }),
@@ -49,6 +52,9 @@ function AuthPage() {
   const { refreshRoles } = useAuth();
   const [busy, setBusy] = useState(false);
   const [awaitingOtp, setAwaitingOtp] = useState(false);
+  const [challengeId, setChallengeId] = useState("");
+  const sendCode = useServerFn(requestAdminCode);
+  const verifyCode = useServerFn(verifyAdminCode);
 
   const redirectTo = search.redirect ?? "/admin";
 
@@ -61,92 +67,43 @@ function AuthPage() {
       return;
     }
     setBusy(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: ADMIN_EMAIL,
-      password: password.data,
-    });
-    if (error) {
-      setBusy(false);
-      if (error.code === "email_not_confirmed") {
-        await supabase.auth.resend({
-          type: "signup",
-          email: ADMIN_EMAIL,
-          options: { emailRedirectTo: window.location.origin },
-        });
-        toast.error("Administrator email is not confirmed. We sent a new confirmation link.");
-        return;
+    const email = emailSchema.safeParse(fd.get("email"));
+    try {
+      if (!email.success) throw new Error("Enter a valid email.");
+      if (email.data.toLowerCase() === ADMIN_EMAIL) {
+        const result = await sendCode({ data: { password: password.data } });
+        setChallengeId(result.challengeId);
+        setAwaitingOtp(true);
+        toast.success("Your six-digit admin login code has been sent.");
+      } else {
+        const { data: login, error } = await supabase.auth.signInWithPassword({ email: email.data.toLowerCase(), password: password.data });
+        if (error || !login.user) throw new Error("Invalid credentials.");
+        const { data: employee } = await supabase.from("employee_access").select("active").eq("user_id", login.user.id).maybeSingle();
+        if (!employee?.active) {
+          await supabase.auth.signOut();
+          throw new Error("Employee access is unavailable. Contact the administrator.");
+        }
+        await refreshRoles(login.user.id);
+        void navigate({ to: "/admin", replace: true });
       }
-      toast.error("Invalid credentials");
-      return;
-    }
-
-    const userId = data.user?.id;
-    if (!userId) {
-      await supabase.auth.signOut();
-      setBusy(false);
-      toast.error("Administrator sign-in could not be verified.");
-      return;
-    }
-    const { data: role } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .eq("role", "admin")
-      .maybeSingle();
-    await supabase.auth.signOut();
-    if (!role) {
-      setBusy(false);
-      toast.error("This account is not authorised for administrator access.");
-      return;
-    }
-
-    const { error: otpError } = await supabase.auth.signInWithOtp({
-      email: ADMIN_EMAIL,
-      options: { shouldCreateUser: false },
-    });
-    setBusy(false);
-    if (otpError) {
-      toast.error(otpError.message);
-      return;
-    }
-    setAwaitingOtp(true);
-    toast.success("A one-time login code was sent to the administrator email.");
+    } catch (error) { toast.error(error instanceof Error ? error.message : "Sign-in failed."); }
+    finally { setBusy(false); }
   }
 
   async function handleOtp(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const token = String(new FormData(event.currentTarget).get("otp") ?? "").trim();
-    if (!/^\d{6}$/.test(token)) {
-      toast.error("Enter the 6-digit code from the administrator email.");
-      return;
-    }
+    if (!/^\d{6}$/.test(token)) { toast.error("Enter the six-digit code."); return; }
     setBusy(true);
-    const { data, error } = await supabase.auth.verifyOtp({
-      email: ADMIN_EMAIL,
-      token,
-      type: "email",
-    });
-    if (error || data.user?.email?.toLowerCase() !== ADMIN_EMAIL) {
-      setBusy(false);
-      toast.error("The code is invalid or has expired.");
-      return;
-    }
-    const { data: role } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", data.user.id)
-      .eq("role", "admin")
-      .maybeSingle();
-    if (!role) {
-      await supabase.auth.signOut();
-      setBusy(false);
-      toast.error("This account is not authorised for administrator access.");
-      return;
-    }
-    await refreshRoles(data.user.id);
-    setBusy(false);
-    toast.success("Administrator verified.");
-    void navigate({ to: redirectTo });
+    try {
+      const tokens = await verifyCode({ data: { challengeId, code: token } });
+      const { data, error } = await supabase.auth.setSession(tokens);
+      if (error || !data.user) throw new Error("Could not complete sign-in.");
+      await refreshRoles(data.user.id);
+      toast.success("Administrator verified.");
+      void navigate({ to: redirectTo, replace: true });
+    } catch (error) { toast.error(error instanceof Error ? error.message : "Verification failed."); }
+    finally { setBusy(false); }
   }
 
   async function handleReset(event: React.FormEvent<HTMLFormElement>) {
@@ -186,15 +143,13 @@ function AuthPage() {
           </h1>
           <p className="mt-2 flex items-start gap-2 text-sm text-muted-foreground">
             <ShieldCheck className="mt-0.5 size-4 shrink-0 text-gold" />
-            Restricted area. Sign in with the official administrator credentials.
+            Restricted staff access. Sign in with your registered email and password.
           </p>
 
           {!awaitingOtp ? <form onSubmit={handleLogin} className="mt-6 space-y-4" noValidate>
             <div>
-              <Label>Admin email</Label>
-              <p className="mt-2 rounded-md border border-border bg-secondary px-3 py-2 text-sm text-card-foreground">
-                {ADMIN_EMAIL}
-              </p>
+              <Label htmlFor="email">Staff email</Label>
+              <Input id="email" name="email" type="email" autoComplete="username" className="mt-2" defaultValue={ADMIN_EMAIL} />
             </div>
             <div>
               <Label htmlFor="password">Password</Label>

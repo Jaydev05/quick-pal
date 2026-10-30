@@ -36,6 +36,8 @@ import { downloadCsv, formatDate, formatDateTime, formatMoney, slugify } from "@
 import { updateApplicationStatus } from "@/lib/application-email.functions";
 import { getAdminCandidates, type AdminCandidate } from "@/lib/admin-candidates.functions";
 import { resumeAnalysisAccess } from "@/lib/resume-analysis.functions";
+import { EmployeeAccess, EmployeePasswordChange } from "@/components/jobs/EmployeeAccess";
+import { getStaffAccess } from "@/lib/staff-access.functions";
 import { InterviewEmailHistory } from "@/components/jobs/InterviewEmailHistory";
 import {
   ADMIN_APPLICATION_STATUS_LIST,
@@ -67,14 +69,19 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminPage() {
-  const { user, loading, isAdmin, signOut } = useAuth();
+  const { user, loading, signOut, refreshRoles } = useAuth();
+  const loadAccess = useServerFn(getStaffAccess);
+  const { data: access, isPending: accessLoading, refetch } = useQuery({ queryKey: ["staff-access", user?.id], queryFn: () => loadAccess(), enabled: !!user, refetchInterval: 10000 });
+  const isAdmin = access?.main === true;
+  const employee = access?.employee;
+  const isStaff = isAdmin || (employee?.active && !employee.must_change_password);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!loading && !user) void navigate({ to: "/auth", search: { redirect: "/admin" } });
   }, [user, loading, navigate]);
 
-  if (loading || !user) {
+  if (loading || !user || accessLoading) {
     return (
       <div className="surface-dark flex min-h-screen items-center justify-center bg-background">
         <p className="text-sm text-muted-foreground">Loading…</p>
@@ -82,7 +89,9 @@ function AdminPage() {
     );
   }
 
-  if (!isAdmin) {
+  if (employee?.active && employee.must_change_password) return <EmployeePasswordChange onDone={() => { void refreshRoles(); void refetch(); }} />;
+
+  if (!isStaff) {
     return (
       <div className="surface-dark flex min-h-screen flex-col items-center justify-center gap-4 bg-background p-6 text-center">
         <h1 className="font-display text-2xl font-bold text-foreground">Admin sign-in required</h1>
@@ -110,19 +119,21 @@ function AdminPage() {
         { to: "/admin", label: "Console", icon: Briefcase },
         { to: "/dashboard", label: "My candidate view", icon: Users },
       ]}
-      title="Admin Panel"
+      title={isAdmin ? "Super Admin" : "Platform Administrator"}
     >
       <PageHeader
         title="Recruitment console"
         description="Manage jobs, candidate accounts, applications and service enquiries."
       />
+      {employee && <section className="mb-6 border-b border-border pb-5"><p className="eyebrow">Platform Administrator</p><h2 className="mt-2 text-xl font-semibold">{employee.full_name}</h2><p className="mt-2 break-words text-sm text-muted-foreground">{employee.designation} · {employee.email} · {employee.phone}</p><p className="mt-1 text-sm text-muted-foreground">Joining date: {employee.joining_date}</p></section>}
       <Tabs defaultValue="applications">
         <TabsList className="h-auto flex-wrap">
           <TabsTrigger value="jobs">Jobs</TabsTrigger>
           <TabsTrigger value="applications">Applications</TabsTrigger>
           <TabsTrigger value="candidates">Candidates</TabsTrigger>
           <TabsTrigger value="enquiries">Enquiries</TabsTrigger>
-          <TabsTrigger value="emails">Email history</TabsTrigger>
+          {isAdmin && <TabsTrigger value="emails">Email history</TabsTrigger>}
+          {isAdmin && <TabsTrigger value="employees">Employee access</TabsTrigger>}
         </TabsList>
         <TabsContent value="jobs" className="pt-6">
           <JobsAdmin />
@@ -136,9 +147,8 @@ function AdminPage() {
         <TabsContent value="enquiries" className="pt-6">
           <EnquiriesAdmin />
         </TabsContent>
-        <TabsContent value="emails" className="pt-6">
-          <InterviewEmailHistory />
-        </TabsContent>
+        {isAdmin && <TabsContent value="emails" className="pt-6"><InterviewEmailHistory /></TabsContent>}
+        {isAdmin && <TabsContent value="employees" className="pt-6"><EmployeeAccess /></TabsContent>}
       </Tabs>
     </PortalShell>
   );
@@ -147,6 +157,7 @@ function AdminPage() {
 /* ---------------- Candidates ---------------- */
 
 function CandidatesAdmin() {
+  const { isAdmin } = useAuth();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<AdminCandidate | null>(null);
   const loadCandidates = useServerFn(getAdminCandidates);
@@ -220,7 +231,7 @@ function CandidatesAdmin() {
           <Button variant="outline" disabled={rows.length === 0} onClick={() => downloadCsv("candidates.csv", exportRows)}>
             <Download /> Export
           </Button>
-          <Button variant="outline" disabled={resuming} onClick={async () => {
+          <Button variant="outline" disabled={!isAdmin || resuming} onClick={async () => {
             setResuming(true);
             try { await resumeAnalysis(); toast.success("Resume autofill enabled. Candidates can try a fresh upload."); }
             catch { toast.error("Could not enable resume autofill."); }
