@@ -1,5 +1,10 @@
 # Roadmap
 
+- [ ] Show clear employee password validation messages without raw error details.
+- [ ] Remove the candidate-view shortcut for employee administrators.
+- [ ] Add a super-admin-only branded Resend composer and record sending outcomes in email history.
+- [ ] Check receiving support without changing the existing mailbox or domain records.
+
 - [x] Add secure code-only Resend OTP for the main administrator.
 - [x] Add employee creation, credential emails, mandatory password changes and access management.
 - [x] Enforce restricted employee permissions on database and server-function access paths; verify unverified-admin denial and permission tests.
