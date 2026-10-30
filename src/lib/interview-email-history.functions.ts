@@ -5,9 +5,8 @@ import type { EmailHistoryEntry } from "./interview-email-history";
 export const getInterviewEmailHistory = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<EmailHistoryEntry[]> => {
-    const { data: role, error: roleError } = await context.supabase.from("user_roles")
-      .select("role").eq("user_id", context.userId).eq("role", "admin").maybeSingle();
-    if (roleError || !role) throw new Error("Admin access required");
+    const { assertStaff } = await import("./staff-access.server");
+    await assertStaff(context.supabase, context.userId, true);
     const { data, error } = await context.supabase.from("admin_activity_logs")
       .select("id,details").eq("entity_type", "interview_email")
       .order("created_at", { ascending: false }).limit(200);
