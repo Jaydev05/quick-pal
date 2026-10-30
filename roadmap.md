@@ -1,5 +1,9 @@
 # Roadmap
 
+- [ ] Add secure code-only Resend OTP for the main administrator.
+- [ ] Add employee creation, credential emails, mandatory password changes and access management.
+- [ ] Enforce restricted employee permissions on every data access path and verify staff flows.
+
 - [ ] Add admin interview email history and previews of both SOFTCON emails, with truthful delivery states.
 - [ ] Complete and verify resume autofill when candidates create their profile.
 
