@@ -34,6 +34,7 @@ import { formatDate, formatExperience, formatSalary, jobLocation } from "@/lib/f
 import { COMPANY, whatsappLink } from "@/lib/site";
 
 export const Route = createFileRoute("/jobs/$slug")({
+  staticData: { sitemap: true },
   head: ({ params }) => ({
     meta: [
       { title: `Job Opening | Jaydev Associates` },

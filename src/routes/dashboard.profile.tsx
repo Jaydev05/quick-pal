@@ -12,6 +12,7 @@ import { fetchMyProfile } from "@/lib/api";
 import { fillEmptyProfileFields, readCandidateProfileForm, type UploadedResume } from "@/lib/resume-profile";
 
 export const Route = createFileRoute("/dashboard/profile")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "My Profile | Jaydev Associates" },

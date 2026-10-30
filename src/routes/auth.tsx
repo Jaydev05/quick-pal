@@ -19,6 +19,7 @@ type AuthSearch = { redirect?: string };
 export const ADMIN_EMAIL = MAIN_ADMIN_EMAIL;
 
 export const Route = createFileRoute("/auth")({
+  staticData: { sitemap: false },
   validateSearch: (search: Record<string, unknown>): AuthSearch => ({
     redirect:
       typeof search["redirect"] === "string" && search["redirect"].startsWith("/") && !search["redirect"].startsWith("//")

@@ -54,6 +54,7 @@ import {
 } from "@/lib/status";
 
 export const Route = createFileRoute("/admin")({
+  staticData: { sitemap: "exclude-subtree" },
   head: () => ({
     meta: [
       { title: "Admin Panel | Jaydev Associates" },

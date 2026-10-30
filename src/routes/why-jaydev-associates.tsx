@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { WHY_US } from "@/lib/site";
 
 export const Route = createFileRoute("/why-jaydev-associates")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Why Choose Jaydev Associates" },

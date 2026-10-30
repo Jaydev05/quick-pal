@@ -5,6 +5,7 @@ import { PortalShell, type NavItem } from "@/components/layout/PortalShell";
 import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/dashboard")({
+  staticData: { sitemap: "exclude-subtree" },
   head: () => ({
     meta: [
       { title: "Candidate Dashboard | Jaydev Associates" },

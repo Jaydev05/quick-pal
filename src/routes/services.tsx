@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { SERVICES } from "@/lib/site";
 
 export const Route = createFileRoute("/services")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Our Services | Jaydev Associates" },

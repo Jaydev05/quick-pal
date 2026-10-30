@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { COMPANY, whatsappLink } from "@/lib/site";
 
 export const Route = createFileRoute("/courses")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Fire & Industrial Safety Courses | Jaydev Associates" },

@@ -10,6 +10,7 @@ import { formatDate, relativeDate } from "@/lib/format";
 import type { ApplicationStatus } from "@/lib/status";
 
 export const Route = createFileRoute("/dashboard/")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Candidate Overview | Jaydev Associates" },
