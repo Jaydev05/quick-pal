@@ -117,7 +117,7 @@ function AdminPage() {
     <PortalShell
       items={[
         { to: "/admin", label: "Console", icon: Briefcase },
-        { to: "/dashboard", label: "My candidate view", icon: Users },
+        ...(isAdmin ? [{ to: "/dashboard", label: "My candidate view", icon: Users }] : []),
       ]}
       title={isAdmin ? "Super Admin" : "Platform Administrator"}
     >

@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { employeeSchema, MAIN_ADMIN_EMAIL, newStaffPassword } from "./staff-access";
+import { employeeSchema, MAIN_ADMIN_EMAIL, validatePasswordChange } from "./staff-access";
 
 function authClient() {
   const url = process.env["SUPABASE_URL"];
@@ -145,7 +145,7 @@ export const manageEmployee = createServerFn({ method: "POST" }).middleware([req
   });
 
 export const changeEmployeePassword = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
-  .inputValidator((input) => z.object({ currentPassword: z.string().min(1).max(72), password: newStaffPassword }).parse(input))
+  .inputValidator(validatePasswordChange)
   .handler(async ({ context, data }) => {
     if (data.password === data.currentPassword) throw new Error("Choose a different password.");
     const { data: employee } = await context.supabase.from("employee_access").select("email,active,must_change_password").eq("user_id", context.userId).maybeSingle();

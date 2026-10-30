@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { createEmployee, listEmployees, manageEmployee, changeEmployeePassword } from "@/lib/staff-access.functions";
 import { formatDateTime } from "@/lib/format";
 import { useAuth } from "@/hooks/useAuth";
+import { passwordChangeSchema } from "@/lib/staff-access";
 
 export function EmployeeAccess() {
   const load = useServerFn(listEmployees);
@@ -63,15 +64,30 @@ export function EmployeePasswordChange({ onDone }: { onDone: () => void }) {
   const change = useServerFn(changeEmployeePassword);
   const { signOut } = useAuth();
   const [busy, setBusy] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
+  const [failure, setFailure] = useState("");
   return <div className="surface-dark flex min-h-screen items-center justify-center bg-background p-5"><form className="w-full max-w-md space-y-5 rounded-lg border border-border bg-card p-6" onSubmit={async (event) => {
     event.preventDefault(); const fd = new FormData(event.currentTarget);
-    if (fd.get("password") !== fd.get("confirm")) { toast.error("The new passwords do not match."); return; }
+    setFailure("");
+    const parsed = passwordChangeSchema.safeParse({ currentPassword: String(fd.get("current")), password: String(fd.get("password")) });
+    const nextErrors: Record<string, string[]> = {};
+    if (!parsed.success) for (const issue of parsed.error.issues) {
+      const field = issue.path[0] === "currentPassword" ? "current" : "password";
+      nextErrors[field] = [...(nextErrors[field] ?? []), issue.message];
+    }
+    if (fd.get("password") !== fd.get("confirm")) nextErrors.confirm = ["The new passwords do not match."];
+    setErrors(nextErrors);
+    if (!parsed.success || Object.keys(nextErrors).length) return;
     setBusy(true);
-    try { await change({ data: { currentPassword: String(fd.get("current")), password: String(fd.get("password")) } }); toast.success("Your password has been updated."); onDone(); }
-    catch (error) { toast.error(error instanceof Error ? error.message : "Could not update password."); }
+    try { await change({ data: parsed.data }); toast.success("Your password has been updated."); onDone(); }
+    catch (error) {
+      const message = error instanceof Error ? error.message : "";
+      setFailure(message && !message.trim().startsWith("[") && !message.trim().startsWith("{") ? message : "Could not update your password. Check the requirements and try again.");
+    }
     finally { setBusy(false); }
   }}><p className="eyebrow">Employee access</p><h1 className="font-display text-2xl font-bold">Set your new password</h1>
-    {[{ name: "current", label: "Temporary / current password" }, { name: "password", label: "New password" }, { name: "confirm", label: "Confirm new password" }].map((field) => <div key={field.name}><Label htmlFor={field.name}>{field.label}</Label><Input id={field.name} name={field.name} type="password" autoComplete={field.name === "current" ? "current-password" : "new-password"} className="mt-2" required /></div>)}
+    {[{ name: "current", label: "Temporary / current password" }, { name: "password", label: "New password" }, { name: "confirm", label: "Confirm new password" }].map((field) => <div key={field.name}><Label htmlFor={field.name}>{field.label}</Label><Input id={field.name} name={field.name} type="password" autoComplete={field.name === "current" ? "current-password" : "new-password"} className="mt-2" maxLength={72} aria-invalid={Boolean(errors[field.name]?.length)} aria-describedby={errors[field.name]?.length ? `${field.name}-error` : field.name === "password" ? "password-requirements" : undefined} onChange={() => { setErrors((previous) => ({ ...previous, [field.name]: [] })); setFailure(""); }} required />{field.name === "password" && <p id="password-requirements" className="mt-2 text-xs text-muted-foreground">12–72 characters, including uppercase and lowercase letters and a number.</p>}{Boolean(errors[field.name]?.length) && <ul id={`${field.name}-error`} role="alert" className="mt-2 space-y-1 text-sm text-destructive">{errors[field.name]?.map((message) => <li key={message}>{message}</li>)}</ul>}</div>)}
+    {failure && <p role="alert" className="text-sm text-destructive">{failure}</p>}
     <Button type="submit" disabled={busy} className="w-full">{busy && <Loader2 className="animate-spin" />}Update password</Button><Button type="button" variant="ghost" onClick={() => void signOut()} className="w-full">Sign out</Button>
   </form></div>;
 }
