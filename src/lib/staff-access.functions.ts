@@ -23,7 +23,7 @@ export const requestAdminCode = createServerFn({ method: "POST" })
     const { data: login, error } = await client.auth.signInWithPassword({ email: MAIN_ADMIN_EMAIL, password: data.password });
     if (error || !login.user) throw new Error("Invalid administrator credentials.");
     const userId = login.user.id;
-    await client.auth.signOut();
+    await client.auth.signOut({ scope: "local" });
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: role } = await supabaseAdmin.from("user_roles").select("role").eq("user_id", userId).eq("role", "admin").maybeSingle();
     if (!role) throw new Error("Administrator access required.");
@@ -66,7 +66,7 @@ export const verifyAdminCode = createServerFn({ method: "POST" })
     const payload = JSON.parse(atob(verified.session.access_token.split(".")[1]?.replace(/-/g, "+").replace(/_/g, "/") ?? "")) as { session_id?: string };
     if (!payload.session_id) throw new Error("Verification failed.");
     const { error: sessionError } = await supabaseAdmin.from("admin_verified_sessions").insert({ session_id: payload.session_id, user_id: challenge.user_id, expires_at: new Date(Date.now() + 12 * 3600000).toISOString() });
-    if (sessionError) { await client.auth.signOut(); throw new Error("Could not activate administrator access."); }
+    if (sessionError) { await client.auth.signOut({ scope: "local" }); throw new Error("Could not activate administrator access."); }
     return { access_token: verified.session.access_token, refresh_token: verified.session.refresh_token };
   });
 
@@ -154,7 +154,7 @@ export const changeEmployeePassword = createServerFn({ method: "POST" }).middlew
     const { data: login, error: loginError } = await client.auth.signInWithPassword({ email: employee.email, password: data.currentPassword });
     if (loginError || login.user?.id !== context.userId) throw new Error("The current password is incorrect.");
     const { error } = await client.auth.updateUser({ password: data.password, current_password: data.currentPassword });
-    await client.auth.signOut();
+    await client.auth.signOut({ scope: "local" });
     if (error) throw new Error("Could not update your password.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error: unlockError } = await supabaseAdmin.from("employee_access").update({ must_change_password: false, updated_at: new Date().toISOString() }).eq("user_id", context.userId).eq("active", true);
