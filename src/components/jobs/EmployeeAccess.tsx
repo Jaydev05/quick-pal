@@ -75,7 +75,7 @@ export function EmployeePasswordChange({ onDone }: { onDone: () => void }) {
       const field = issue.path[0] === "currentPassword" ? "current" : "password";
       nextErrors[field] = [...(nextErrors[field] ?? []), issue.message];
     }
-    if (fd.get("password") !== fd.get("confirm")) nextErrors.confirm = ["The new passwords do not match."];
+    if (fd.get("password") !== fd.get("confirm")) nextErrors["confirm"] = ["The new passwords do not match."];
     setErrors(nextErrors);
     if (!parsed.success || Object.keys(nextErrors).length) return;
     setBusy(true);

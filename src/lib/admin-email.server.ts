@@ -18,7 +18,7 @@ export async function sendComposedEmail(client: AdminClient, userId: string, inp
     if (reserveError.code !== "23505") throw new Error("Could not record this email. Nothing was sent.");
     const { data: previous, error } = await client.from("admin_activity_logs").select("details").eq("id", data.requestId).eq("actor_id", userId).eq("entity_type", "composed_email").maybeSingle();
     if (error || !previous) throw new Error("Could not verify the previous send. Refresh email history before trying again.");
-    const status = (previous.details as Record<string, unknown> | null)?.status;
+    const status = (previous.details as Record<string, unknown> | null)?.["status"];
     return { status: status === "accepted" ? "accepted" : status === "failed" ? "failed" : "pending", duplicate: true };
   }
   try {
