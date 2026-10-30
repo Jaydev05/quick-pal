@@ -22,6 +22,7 @@ import {
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/applications")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "My Applications | Jaydev Associates" },

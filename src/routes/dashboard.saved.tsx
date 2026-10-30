@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { fetchSavedJobs, type JobWithCategory } from "@/lib/api";
 
 export const Route = createFileRoute("/dashboard/saved")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Saved Jobs | Jaydev Associates" },

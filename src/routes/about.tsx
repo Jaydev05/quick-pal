@@ -14,6 +14,7 @@ import isoPreview from "@/assets/iso-9001-2015-certificate.jpg.asset.json";
 import isoDocument from "@/assets/iso-9001-2015-certificate.pdf.asset.json";
 
 export const Route = createFileRoute("/about")({
+  staticData: { sitemap: true },
   head: () => ({ meta: [
     { title: "About Jaydev Associates LLP | Our Story, Leadership & Registrations" },
     { name: "description", content: "Learn about Jaydev Associates LLP, founder Jay Doshi, our professional services, company credentials and official registrations." },

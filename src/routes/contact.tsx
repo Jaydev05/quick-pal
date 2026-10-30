@@ -21,6 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { COMPANY, ENQUIRY_SERVICES, whatsappLink } from "@/lib/site";
 
 export const Route = createFileRoute("/contact")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Contact Jaydev Associates | Mangaon, Raigad" },

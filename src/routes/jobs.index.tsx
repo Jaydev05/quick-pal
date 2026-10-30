@@ -28,6 +28,7 @@ type JobSearch = {
 };
 
 export const Route = createFileRoute("/jobs/")({
+  staticData: { sitemap: true },
   validateSearch: (search: Record<string, unknown>): JobSearch => ({
     q: typeof search["q"] === "string" ? search["q"] : undefined,
     location: typeof search["location"] === "string" ? search["location"] : undefined,

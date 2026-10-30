@@ -14,6 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 type LoginSearch = { redirect?: string };
 
 export const Route = createFileRoute("/login")({
+  staticData: { sitemap: false },
   validateSearch: (search: Record<string, unknown>): LoginSearch => ({
     redirect:
       typeof search["redirect"] === "string" && search["redirect"].startsWith("/")

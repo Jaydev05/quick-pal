@@ -22,6 +22,7 @@ import { JOB_ALERT_GROUPS } from "@/lib/job-alert-groups";
 import heroImage from "@/assets/hero-office.jpg";
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Jaydev Associates | Recruitment, Security & Facility Services" },

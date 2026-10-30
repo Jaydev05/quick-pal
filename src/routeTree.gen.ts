@@ -19,6 +19,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as WhyJaydevAssociatesRouteImport } from './routes/why-jaydev-associates'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardApplicationsRouteImport } from './routes/dashboard.applications'
@@ -77,6 +78,11 @@ const ServicesRoute = ServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WhyJaydevAssociatesRoute = WhyJaydevAssociatesRouteImport.update({
   id: '/why-jaydev-associates',
   path: '/why-jaydev-associates',
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/why-jaydev-associates': typeof WhyJaydevAssociatesRoute
   '/dashboard/applications': typeof DashboardApplicationsRoute
   '/dashboard/profile': typeof DashboardProfileRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/why-jaydev-associates': typeof WhyJaydevAssociatesRoute
   '/dashboard/applications': typeof DashboardApplicationsRoute
   '/dashboard/profile': typeof DashboardProfileRoute
@@ -162,6 +170,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/why-jaydev-associates': typeof WhyJaydevAssociatesRoute
   '/dashboard/applications': typeof DashboardApplicationsRoute
   '/dashboard/profile': typeof DashboardProfileRoute
@@ -183,6 +192,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/services'
+    | '/sitemap.xml'
     | '/why-jaydev-associates'
     | '/dashboard/applications'
     | '/dashboard/profile'
@@ -201,6 +211,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/services'
+    | '/sitemap.xml'
     | '/why-jaydev-associates'
     | '/dashboard/applications'
     | '/dashboard/profile'
@@ -220,6 +231,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/services'
+    | '/sitemap.xml'
     | '/why-jaydev-associates'
     | '/dashboard/applications'
     | '/dashboard/profile'
@@ -240,6 +252,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   WhyJaydevAssociatesRoute: typeof WhyJaydevAssociatesRoute
   JobsSlugRoute: typeof JobsSlugRoute
   JobsIndexRoute: typeof JobsIndexRoute
@@ -315,6 +328,13 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/why-jaydev-associates': {
@@ -398,6 +418,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   WhyJaydevAssociatesRoute: WhyJaydevAssociatesRoute,
   JobsSlugRoute: JobsSlugRoute,
   JobsIndexRoute: JobsIndexRoute,
