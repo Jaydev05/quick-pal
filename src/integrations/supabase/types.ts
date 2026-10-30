@@ -44,6 +44,60 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_login_challenges: {
+        Row: {
+          attempts: number
+          auth_token_hash: string
+          code_digest: string
+          consumed: boolean
+          created_at: string
+          expires_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          auth_token_hash: string
+          code_digest: string
+          consumed?: boolean
+          created_at?: string
+          expires_at: string
+          id: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          auth_token_hash?: string
+          code_digest?: string
+          consumed?: boolean
+          created_at?: string
+          expires_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      admin_verified_sessions: {
+        Row: {
+          expires_at: string
+          session_id: string
+          user_id: string
+          verified_at: string
+        }
+        Insert: {
+          expires_at: string
+          session_id: string
+          user_id: string
+          verified_at?: string
+        }
+        Update: {
+          expires_at?: string
+          session_id?: string
+          user_id?: string
+          verified_at?: string
+        }
+        Relationships: []
+      }
       application_status_history: {
         Row: {
           application_id: string
@@ -165,6 +219,51 @@ export type Database = {
           id?: string
           name?: string
           slug?: string
+        }
+        Relationships: []
+      }
+      employee_access: {
+        Row: {
+          active: boolean
+          created_at: string
+          created_by: string
+          designation: string
+          email: string
+          full_name: string
+          joining_date: string
+          must_change_password: boolean
+          notes: string | null
+          phone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          created_by: string
+          designation: string
+          email: string
+          full_name: string
+          joining_date?: string
+          must_change_password?: boolean
+          notes?: string | null
+          phone: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          created_by?: string
+          designation?: string
+          email?: string
+          full_name?: string
+          joining_date?: string
+          must_change_password?: boolean
+          notes?: string | null
+          phone?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -713,6 +812,13 @@ export type Database = {
     Functions: {
       admin_exists: { Args: never; Returns: boolean }
       claim_admin: { Args: never; Returns: boolean }
+      consume_admin_login_challenge: {
+        Args: { challenge_id: string; digest: string }
+        Returns: {
+          auth_token_hash: string
+          user_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
