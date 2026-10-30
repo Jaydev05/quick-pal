@@ -11,10 +11,19 @@ export const employeeSchema = z.object({
   joiningDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   notes: z.string().trim().max(2000).default(""),
 });
-export const newStaffPassword = z.string().min(12, "Use at least 12 characters.").max(72)
+export const newStaffPassword = z.string().min(12, "Use at least 12 characters.").max(72, "Use no more than 72 characters.")
   .regex(/[A-Z]/, "Include an uppercase letter.")
   .regex(/[a-z]/, "Include a lowercase letter.")
   .regex(/[0-9]/, "Include a number.");
+export const passwordChangeSchema = z.object({
+  currentPassword: z.string().min(1, "Enter your current password.").max(72, "Use no more than 72 characters."),
+  password: newStaffPassword,
+});
+export function validatePasswordChange(input: unknown) {
+  const result = passwordChangeSchema.safeParse(input);
+  if (!result.success) throw new Error(result.error.issues.map((issue) => issue.message).join(" "));
+  return result.data;
+}
 export function staffCanAccess(section: string, mainAdmin: boolean, activeEmployee: boolean) {
   return mainAdmin || (activeEmployee && EMPLOYEE_SECTIONS.some((item) => item === section));
 }

@@ -20,3 +20,4 @@
 - Store interview email snapshots in existing admin activity records and read through an admin-authorized server function; acceptance never implies confirmed delivery.
 - Staff authorization uses effective database role helpers: main-admin permissions require a verified OTP session, and recruiter permissions require active employee access without a pending password change. Server functions must use assertStaff before privileged reads; raw role rows are not authorization.
 - Staff credentials are generated and emailed server-side, never persisted in logs; employee management lives in the existing admin console and staff login reuses /auth.
+- Super-admin composed emails use a shared escaped brand template and authenticated Resend functions; claim each send with an audit-row UUID before delivery so duplicate submissions cannot send twice. Receiving reads stay super-admin-only and never change mailbox DNS automatically.

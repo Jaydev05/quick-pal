@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { EMPLOYEE_SECTIONS, employeeSchema, MAIN_ADMIN_EMAIL, newStaffPassword, staffCanAccess } from "./staff-access";
+import { EMPLOYEE_SECTIONS, employeeSchema, MAIN_ADMIN_EMAIL, newStaffPassword, staffCanAccess, validatePasswordChange } from "./staff-access";
 
 describe("employee access rules", () => {
   it("reserves the supplied main administrator email", () => {
@@ -11,6 +11,7 @@ describe("employee access rules", () => {
     for (const section of ["jobs", "candidates", "applications", "enquiries"]) expect(staffCanAccess(section, false, true)).toBe(true);
     expect(staffCanAccess("employees", false, true)).toBe(false);
     expect(staffCanAccess("emails", false, true)).toBe(false);
+    expect(staffCanAccess("dashboard", false, true)).toBe(false);
   });
   it("deactivated employees cannot use assigned sections", () => {
     for (const section of EMPLOYEE_SECTIONS) expect(staffCanAccess(section, false, false)).toBe(false);
@@ -22,5 +23,10 @@ describe("employee access rules", () => {
     expect(newStaffPassword.safeParse("short").success).toBe(false);
     expect(newStaffPassword.safeParse("abcdefghijkl").success).toBe(false);
     expect(newStaffPassword.safeParse("NewSecurePass2026").success).toBe(true);
+  });
+  it("rejects short passwords without a serialized validation exception", () => {
+    expect(() => validatePasswordChange({ currentPassword: "existing", password: "short" })).toThrow(Error);
+    try { validatePasswordChange({ currentPassword: "existing", password: "short" }); }
+    catch (error) { expect((error as Error).name).toBe("Error"); expect((error as Error).message.startsWith("[")).toBe(false); }
   });
 });
