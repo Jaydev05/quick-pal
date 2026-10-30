@@ -8,7 +8,7 @@ export const getInterviewEmailHistory = createServerFn({ method: "GET" })
     const { assertStaff } = await import("./staff-access.server");
     await assertStaff(context.supabase, context.userId, true);
     const { data, error } = await context.supabase.from("admin_activity_logs")
-      .select("id,details").eq("entity_type", "interview_email")
+      .select("id,details").in("entity_type", ["interview_email", "composed_email"])
       .order("created_at", { ascending: false }).limit(200);
     if (error) throw new Error("Email history could not be loaded.");
     return (data ?? []).map((row) => {
