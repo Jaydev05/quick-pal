@@ -46,8 +46,8 @@ export const analyseMyResume = createServerFn({ method: "POST" })
 export const resumeAnalysisAccess = createServerFn({method:"POST"})
   .middleware([requireSupabaseAuth])
   .handler(async ({context}) => {
-    const {data:role,error} = await context.supabase.from("user_roles").select("role").eq("user_id",context.userId).eq("role","admin").maybeSingle();
-    if (error || !role) throw new Error("Admin access required.");
+    const { assertStaff } = await import("./staff-access.server");
+    await assertStaff(context.supabase, context.userId, true);
     const {supabaseAdmin} = await import("@/integrations/supabase/client.server");
     const {error:saveError} = await supabaseAdmin.from("resume_analysis_service_state").update({paused:false,status_code:null,message:null,updated_at:new Date().toISOString()}).eq("feature","resume_profile");
     if(saveError) throw new Error("Could not resume analysis.");

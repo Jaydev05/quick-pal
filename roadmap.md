@@ -1,5 +1,10 @@
 # Roadmap
 
+- [x] Add secure code-only Resend OTP for the main administrator.
+- [x] Add employee creation, credential emails, mandatory password changes and access management.
+- [x] Enforce restricted employee permissions on database and server-function access paths; verify unverified-admin denial and permission tests.
+- [ ] Verify live OTP receipt, employee creation, first password change and deactivation in the admin panel (requires the administrator to complete email OTP sign-in).
+
 - [ ] Add admin interview email history and previews of both SOFTCON emails, with truthful delivery states.
 - [ ] Complete and verify resume autofill when candidates create their profile.
 
@@ -9,7 +14,7 @@
 - [x] Add a faint home-style background image to the About introduction.
 - [x] Refine the Jay Doshi founder section with a stronger editorial layout.
 - [x] Verify the updated About and founder sections on desktop and mobile.
-- [ ] Admin OTP email with 6-digit code + logo (needs email domain setup)
+- [x] Admin OTP email with 6-digit code and supplied logo, without a sign-in link.
 - [x] Hide the “Edit with Lovable” badge on published pages.
 - [x] Link the Resend connection for server-side app emails.
 - [x] Add application confirmation and status-change email automation.

@@ -35,18 +35,8 @@ export type AdminCandidate = {
 export const getAdminCandidates = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<AdminCandidate[]> => {
-    const { data: adminRole, error: roleError } = await context.supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", context.userId)
-      .eq("role", "admin")
-      .maybeSingle();
-
-    if (roleError) {
-      console.error("Candidate directory admin check failed", roleError.message);
-      throw new Error("Could not verify admin access. Please sign in again.");
-    }
-    if (!adminRole) throw new Error("Admin access required");
+    const { assertStaff } = await import("./staff-access.server");
+    await assertStaff(context.supabase, context.userId);
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const users: Array<{
@@ -83,7 +73,7 @@ export const getAdminCandidates = createServerFn({ method: "GET" })
     if (savedJobsResult.error) throw new Error("Could not load saved-job activity");
 
     const adminIds = new Set(
-      (rolesResult.data ?? []).filter((row) => row.role === "admin").map((row) => row.user_id),
+      (rolesResult.data ?? []).filter((row) => row.role === "admin" || row.role === "recruiter").map((row) => row.user_id),
     );
     const profilesById = new Map((profilesResult.data ?? []).map((profile) => [profile.id, profile]));
     const applicationCounts = new Map<string, number>();

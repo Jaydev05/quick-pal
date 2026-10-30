@@ -18,3 +18,5 @@
 - Extract PDF resumes through streamed Lovable AI Responses and DOCX via browser-safe text extraction; legacy DOC retains manual upload support because binary conversion is unavailable in the server runtime.
 - Store professional summaries in existing profiles and AI access pauses in server-only service state, so candidate visibility stays consistent and blocked requests do not repeat.
 - Store interview email snapshots in existing admin activity records and read through an admin-authorized server function; acceptance never implies confirmed delivery.
+- Staff authorization uses effective database role helpers: main-admin permissions require a verified OTP session, and recruiter permissions require active employee access without a pending password change. Server functions must use assertStaff before privileged reads; raw role rows are not authorization.
+- Staff credentials are generated and emailed server-side, never persisted in logs; employee management lives in the existing admin console and staff login reuses /auth.
