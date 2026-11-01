@@ -15,6 +15,13 @@
       "when": 1793344104822,
       "tag": "0001_restrict_staff_audit_records",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793537918147,
+      "tag": "0002_private_super_admin_desk",
+      "breakpoints": true
     }
   ]
 }

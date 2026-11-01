@@ -222,6 +222,239 @@ export type Database = {
         }
         Relationships: []
       }
+      desk_activity: {
+        Row: {
+          action: string
+          actor_id: string
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          label: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          label?: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          label?: string
+        }
+        Relationships: []
+      }
+      desk_calls: {
+        Row: {
+          called_at: string
+          candidate_id: string
+          company: string
+          created_at: string
+          discussion: string
+          expectations: string
+          followup_at: string | null
+          id: string
+          interest: string
+          outcome: string
+          remarks: string
+          subject: string
+        }
+        Insert: {
+          called_at: string
+          candidate_id: string
+          company?: string
+          created_at?: string
+          discussion?: string
+          expectations?: string
+          followup_at?: string | null
+          id?: string
+          interest: string
+          outcome: string
+          remarks?: string
+          subject: string
+        }
+        Update: {
+          called_at?: string
+          candidate_id?: string
+          company?: string
+          created_at?: string
+          discussion?: string
+          expectations?: string
+          followup_at?: string | null
+          id?: string
+          interest?: string
+          outcome?: string
+          remarks?: string
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "desk_calls_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "desk_candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      desk_candidates: {
+        Row: {
+          college: string
+          company: string
+          created_at: string
+          designation: string
+          education: string
+          email: string
+          email_key: string
+          experience_years: number | null
+          extracted_text: string
+          file_hash: string
+          full_name: string
+          id: string
+          keywords: string
+          location: string
+          phone: string
+          phone_key: string
+          preferred_location: string
+          processing_status: string
+          resume_name: string
+          resume_path: string
+          search_vector: unknown
+          skills: string
+          specialization: string
+          summary: string
+          updated_at: string
+        }
+        Insert: {
+          college?: string
+          company?: string
+          created_at?: string
+          designation?: string
+          education?: string
+          email?: string
+          email_key?: string
+          experience_years?: number | null
+          extracted_text?: string
+          file_hash?: string
+          full_name?: string
+          id?: string
+          keywords?: string
+          location?: string
+          phone?: string
+          phone_key?: string
+          preferred_location?: string
+          processing_status?: string
+          resume_name?: string
+          resume_path?: string
+          search_vector?: unknown
+          skills?: string
+          specialization?: string
+          summary?: string
+          updated_at?: string
+        }
+        Update: {
+          college?: string
+          company?: string
+          created_at?: string
+          designation?: string
+          education?: string
+          email?: string
+          email_key?: string
+          experience_years?: number | null
+          extracted_text?: string
+          file_hash?: string
+          full_name?: string
+          id?: string
+          keywords?: string
+          location?: string
+          phone?: string
+          phone_key?: string
+          preferred_location?: string
+          processing_status?: string
+          resume_name?: string
+          resume_path?: string
+          search_vector?: unknown
+          skills?: string
+          specialization?: string
+          summary?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      desk_items: {
+        Row: {
+          call_id: string | null
+          candidate_id: string | null
+          created_at: string
+          deadline: string | null
+          description: string
+          id: string
+          kind: string
+          notes: string
+          priority: string
+          reminder_at: string | null
+          scheduled_at: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          call_id?: string | null
+          candidate_id?: string | null
+          created_at?: string
+          deadline?: string | null
+          description?: string
+          id?: string
+          kind: string
+          notes?: string
+          priority?: string
+          reminder_at?: string | null
+          scheduled_at?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          call_id?: string | null
+          candidate_id?: string | null
+          created_at?: string
+          deadline?: string | null
+          description?: string
+          id?: string
+          kind?: string
+          notes?: string
+          priority?: string
+          reminder_at?: string | null
+          scheduled_at?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "desk_items_call_id_fkey"
+            columns: ["call_id"]
+            isOneToOne: true
+            referencedRelation: "desk_calls"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "desk_items_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "desk_candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employee_access: {
         Row: {
           active: boolean
