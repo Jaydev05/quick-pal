@@ -1,5 +1,9 @@
 # Roadmap
 
+- [ ] Build the super-admin-only /desk overview, tasks, candidate calls, follow-ups, calendar, activity history and reports.
+- [ ] Add private bulk resume storage, editable extracted profiles, duplicate safeguards and combined candidate search filters.
+- [ ] Verify /desk permissions and rules; verify live saving and resume workflows with a verified super-admin session.
+
 - [x] Show clear employee password validation messages without raw error details; validation tests pass.
 - [x] Remove the candidate-view shortcut for employee administrators; checked in an active employee session.
 - [x] Add a super-admin-only branded Resend composer and record sending outcomes in email history; sending, failure and duplicate safeguards tested.
