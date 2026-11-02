@@ -72,7 +72,9 @@ export const deskSaveCandidate = createServerFn({method:"POST"}).middleware([req
 export const deskCandidateDetails = createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator(idSchema).handler(async ({data,context})=>{
   await authorize(context);
   const {data:row,error}=await context.supabase.from("desk_candidates").select("*").eq("id",data.id).single();
-  if(error || !row) throw new Error("Candidate could not be opened."); return row;
+  if(error || !row) throw new Error("Candidate could not be opened.");
+  const {search_vector:_vector,...profile}=row;
+  return profile;
 });
 export const deskDuplicate = createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator(z.object({hash:z.string().length(64)})).handler(async ({data,context})=>{
   await authorize(context);

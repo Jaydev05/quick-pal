@@ -31,7 +31,8 @@ export async function readDeskResume(file:File, status:(s:string)=>void):Promise
     const pdfjs=await import("pdfjs-dist");
     const {default:workerUrl}=await import("pdfjs-dist/build/pdf.worker.min.mjs?url");
     pdfjs.GlobalWorkerOptions.workerSrc=workerUrl;
-    const doc=await pdfjs.getDocument({data:new Uint8Array(await file.arrayBuffer()),isEvalSupported:false}).promise;
+    const loadingTask=pdfjs.getDocument({data:new Uint8Array(await file.arrayBuffer())});
+    const doc=await loadingTask.promise;
     try {
       for(let pageNumber=1;pageNumber<=Math.min(doc.numPages,30);pageNumber++) {
         status(`Reading page ${pageNumber} of ${doc.numPages}…`);
@@ -49,7 +50,7 @@ export async function readDeskResume(file:File, status:(s:string)=>void):Promise
         }
         text+=pageText+"\n"; if(text.length>60000) break;
       }
-    } finally {await doc.destroy();}
+    } finally {await loadingTask.destroy();}
   }
   return profileFromText(text);
 }
