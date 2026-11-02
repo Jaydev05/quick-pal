@@ -1,5 +1,8 @@
 # Roadmap
 
+- [ ] Simplify /desk into /crm with resume search, candidate placement records, partner companies, and tasks/reminders while preserving existing private data.
+- [ ] Verify CRM rules, security, saved data and desktop/mobile layout; OTP-required checks must use a verified super-admin session.
+
 - [x] Build the super-admin-only /desk overview, tasks, candidate calls, follow-ups, calendar, activity history and reports.
 - [x] Add private bulk resume storage, editable extracted profiles, duplicate safeguards and combined candidate search filters.
 - [x] Verify /desk rules, applied security policies, signed-out and unverified-super-admin denial; 24 tests pass and the homepage still opens.
