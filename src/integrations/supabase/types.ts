@@ -222,6 +222,57 @@ export type Database = {
         }
         Relationships: []
       }
+      crm_companies: {
+        Row: {
+          address: string
+          commission_basis: string
+          commission_percent: number | null
+          contact_name: string
+          created_at: string
+          email: string
+          id: string
+          industry: string
+          name: string
+          notes: string
+          phone: string
+          terms: string
+          updated_at: string
+          vacancies: string
+        }
+        Insert: {
+          address?: string
+          commission_basis?: string
+          commission_percent?: number | null
+          contact_name?: string
+          created_at?: string
+          email?: string
+          id?: string
+          industry?: string
+          name: string
+          notes?: string
+          phone?: string
+          terms?: string
+          updated_at?: string
+          vacancies?: string
+        }
+        Update: {
+          address?: string
+          commission_basis?: string
+          commission_percent?: number | null
+          contact_name?: string
+          created_at?: string
+          email?: string
+          id?: string
+          industry?: string
+          name?: string
+          notes?: string
+          phone?: string
+          terms?: string
+          updated_at?: string
+          vacancies?: string
+        }
+        Relationships: []
+      }
       desk_activity: {
         Row: {
           action: string
@@ -307,10 +358,12 @@ export type Database = {
       }
       desk_candidates: {
         Row: {
+          arrived_on: string | null
           college: string
           company: string
           created_at: string
           designation: string
+          desired_job: string
           education: string
           email: string
           email_key: string
@@ -319,25 +372,37 @@ export type Database = {
           file_hash: string
           full_name: string
           id: string
+          interview_on: string | null
           keywords: string
           location: string
+          notes: string
+          offer_name: string
+          offer_path: string
+          partner_id: string | null
           phone: string
           phone_key: string
+          placed_on: string | null
+          placement_company: string
           preferred_location: string
           processing_status: string
+          recruitment_status: string
           resume_name: string
           resume_path: string
+          salary_package: string
           search_vector: unknown
           skills: string
+          source: string
           specialization: string
           summary: string
           updated_at: string
         }
         Insert: {
+          arrived_on?: string | null
           college?: string
           company?: string
           created_at?: string
           designation?: string
+          desired_job?: string
           education?: string
           email?: string
           email_key?: string
@@ -346,25 +411,37 @@ export type Database = {
           file_hash?: string
           full_name?: string
           id?: string
+          interview_on?: string | null
           keywords?: string
           location?: string
+          notes?: string
+          offer_name?: string
+          offer_path?: string
+          partner_id?: string | null
           phone?: string
           phone_key?: string
+          placed_on?: string | null
+          placement_company?: string
           preferred_location?: string
           processing_status?: string
+          recruitment_status?: string
           resume_name?: string
           resume_path?: string
+          salary_package?: string
           search_vector?: unknown
           skills?: string
+          source?: string
           specialization?: string
           summary?: string
           updated_at?: string
         }
         Update: {
+          arrived_on?: string | null
           college?: string
           company?: string
           created_at?: string
           designation?: string
+          desired_job?: string
           education?: string
           email?: string
           email_key?: string
@@ -373,21 +450,39 @@ export type Database = {
           file_hash?: string
           full_name?: string
           id?: string
+          interview_on?: string | null
           keywords?: string
           location?: string
+          notes?: string
+          offer_name?: string
+          offer_path?: string
+          partner_id?: string | null
           phone?: string
           phone_key?: string
+          placed_on?: string | null
+          placement_company?: string
           preferred_location?: string
           processing_status?: string
+          recruitment_status?: string
           resume_name?: string
           resume_path?: string
+          salary_package?: string
           search_vector?: unknown
           skills?: string
+          source?: string
           specialization?: string
           summary?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "desk_candidates_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "crm_companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       desk_items: {
         Row: {

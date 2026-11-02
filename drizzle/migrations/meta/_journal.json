@@ -29,6 +29,13 @@
       "when": 1793603719189,
       "tag": "0003_desk_call_history_validation",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793614390031,
+      "tag": "0004_crm_candidates_and_partners",
+      "breakpoints": true
     }
   ]
 }
