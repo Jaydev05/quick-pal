@@ -821,7 +821,7 @@ export function DeskWorkspace() {
                   onSubmit={(e) => {
                     e.preventDefault();
                     setFilters({ ...filters, q: searchText, page: 0 });
-                    if (searchText.trim()) void recordSearch({ data: { q: searchText.trim() } });
+                    if (searchText.trim()) void recordSearch({ data: { q: searchText.trim() } }).then(refresh).catch(() => toast.error("Search history could not be recorded."));
                   }}
                   className="mb-4 flex gap-2"
                 >
@@ -1146,7 +1146,7 @@ export function DeskWorkspace() {
                   Most searched qualifications & keywords
                 </h2>
                 {Object.entries(
-                  data.searches.reduce<Record<string, number>>(
+                  data.searches.filter(s => isWithinInterval(new Date(s.created_at), {start, end})).reduce<Record<string, number>>(
                     (acc, s) => ({ ...acc, [s.label]: (acc[s.label] ?? 0) + 1 }),
                     {},
                   ),
