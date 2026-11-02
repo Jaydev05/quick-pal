@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Briefcase, Download, Eye, FileText, Inbox, Search, Users } from "lucide-react";
+import { Briefcase, CalendarDays, Download, Eye, FileText, Inbox, Search, Users } from "lucide-react";
 import { PortalShell, PageHeader } from "@/components/layout/PortalShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

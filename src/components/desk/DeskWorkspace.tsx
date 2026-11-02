@@ -48,7 +48,7 @@ export function DeskWorkspace() {
   event.preventDefault();setSaving(true);setFormError('');const fd=new FormData(event.currentTarget);const t=(k:string)=>String(fd.get(k)??'').trim();
   try {
    if(dialog==='candidate') {const fields=Object.fromEntries(fd.entries());await saveCandidate({data:candidateSchema.parse({...editCandidate,...fields,experience_years:t('experience_years')?Number(t('experience_years')):null})});}
-   else if(dialog==='item') await saveItem({data:itemSchema.parse({id:editItem?.id,kind,title:t('title'),description:t('description'),notes:t('notes'),priority:t('priority'),status:t('status'),scheduled_at:iso(fd.get('scheduled_at')),deadline:iso(fd.get('deadline')),reminder_at:iso(fd.get('reminder_at')),candidate_id:t('candidate_id')||null,call_id:editItem?.call_id??null})});
+   else if(dialog==='item') await saveItem({data:itemSchema.parse({id:editItem?.id||undefined,kind,title:t('title'),description:t('description'),notes:t('notes'),priority:t('priority'),status:t('status'),scheduled_at:iso(fd.get('scheduled_at')),deadline:iso(fd.get('deadline')),reminder_at:iso(fd.get('reminder_at')),candidate_id:t('candidate_id')||null,call_id:editItem?.call_id??null})});
    else await saveCall({data:callSchema.parse({candidate_id:t('candidate_id'),subject:t('subject'),company:t('company'),called_at:iso(fd.get('called_at')),outcome:t('outcome'),interest:t('interest'),discussion:t('discussion'),expectations:t('expectations'),remarks:t('remarks'),followup_at:iso(fd.get('followup_at'))})});
    setDialog(null);await refresh();toast.success('Saved.');
   }catch(e){setFormError(message(e));}finally{setSaving(false);}
