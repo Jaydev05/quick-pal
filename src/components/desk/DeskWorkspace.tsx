@@ -18,6 +18,7 @@ import {downloadCsv} from '@/lib/format';
 import {candidateSchema,itemSchema,callSchema,priorities,taskStatuses,callOutcomes,interests,activityState,reportCounts,type DeskCandidateInput} from '@/lib/desk';
 import {deskSnapshot,deskCandidates,deskSaveCandidate,deskCandidateDetails,deskSaveItem,deskSaveCall,deskRemove,deskResumeUrl,deskDuplicate,deskRecordSearch,type DeskSnapshot,type DeskCandidate,type DeskItem} from '@/lib/desk.functions';
 import {readDeskResume,resumeHash} from '@/lib/desk-resume';
+import {validateResumeFile} from '@/lib/resume-profile';
 
 const sections=[{id:'overview',label:'Overview',icon:LayoutDashboard},{id:'tasks',label:'Daily tasks',icon:ListTodo},{id:'calls',label:'Candidate calls',icon:Phone},{id:'resumes',label:'Resume database',icon:FileText},{id:'followups',label:'Follow-ups',icon:Bell},{id:'calendar',label:'Calendar',icon:CalendarDays},{id:'history',label:'Activity history',icon:History},{id:'reports',label:'Business reports',icon:ChartNoAxesCombined}];
 const empty:DeskSnapshot={items:[],calls:[],candidates:[],activity:[],searches:[]};
@@ -58,6 +59,7 @@ export function DeskWorkspace() {
   for(const file of Array.from(files)) {
    let uploadedPath='';
    try {
+    validateResumeFile(file);
     setUploadStatus(`Checking ${file.name}…`);const hash=await resumeHash(file);const existing=await duplicate({data:{hash}});
     if(existing){toast.info(`Already stored: ${existing.full_name||file.name}`);continue;}
     let extracted:DeskCandidateInput;

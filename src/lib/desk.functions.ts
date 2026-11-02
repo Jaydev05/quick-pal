@@ -30,10 +30,13 @@ export const deskSnapshot = createServerFn({method:"POST"}).middleware([requireS
     if(error) throw new Error("Could not load candidate totals.");
     allCandidates.push(...(data??[])); if((data?.length??0)<500) break;
   }
-  const {data:activity,error}=await client.from("desk_activity").select("*").order("created_at",{ascending:false}).limit(200);
-  if(error) throw new Error("Could not load activity history.");
-  const {data:searches}=await client.from("desk_activity").select("label").eq("action","search").order("created_at",{ascending:false}).limit(500);
-  return {items:allItems,calls:allCalls,candidates:allCandidates,activity:activity??[],searches:searches??[]};
+  const activity=[];
+  for(let page=0;;page++) {
+    const {data,error}=await client.from("desk_activity").select("*").order("created_at",{ascending:false}).order("id").range(page*500,page*500+499);
+    if(error) throw new Error("Could not load activity history.");
+    activity.push(...(data??[])); if((data?.length??0)<500) break;
+  }
+  return {items:allItems,calls:allCalls,candidates:allCandidates,activity,searches:activity.filter(a=>a.action==="search").map(a=>({label:a.label,created_at:a.created_at}))};
 });
 export type DeskSnapshot = Awaited<ReturnType<typeof deskSnapshot>>;
 export type DeskItem = DeskSnapshot["items"][number];
