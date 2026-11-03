@@ -1,17 +1,9 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { deskAccess } from "@/lib/desk.functions";
-import { DeskWorkspace } from "@/components/desk/DeskWorkspace";
 
 export const Route = createFileRoute("/desk")({
   ssr: false,
   staticData: { sitemap: "exclude-subtree" },
-  beforeLoad: async () => {
-    try {
-      await deskAccess();
-    } catch {
-      throw redirect({ to: "/auth", search: { redirect: "/desk" } });
-    }
-  },
+  beforeLoad: () => { throw redirect({ to: "/crm", replace: true }); },
   head: () => ({
     meta: [
       { title: "Daily Desk | Jaydev Associates" },
@@ -29,5 +21,5 @@ export const Route = createFileRoute("/desk")({
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
-  component: DeskWorkspace,
+
 });

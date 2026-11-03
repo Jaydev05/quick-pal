@@ -12,6 +12,17 @@ export const callOutcomes = [
 export const interests = ["Interested", "Not Interested", "Maybe"] as const;
 const text = (max = 300) => z.string().trim().max(max).default("");
 const instant = z.string().datetime({ offset: true }).nullable().default(null);
+export const recruitmentStatuses = ["Looking for job", "In process", "Placed", "Not placed"] as const;
+const optionalDate = z.union([z.string().date(), z.literal("")]).nullable().default(null).transform(v => v || null);
+export const companySchema = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string().trim().min(1, "Enter the company name.").max(200),
+  contact_name: text(), email: z.union([z.string().email(), z.literal("")]).default(""),
+  phone: text(30), address: text(2000), industry: text(),
+  commission_percent: z.number().min(0).max(100).nullable().default(null),
+  commission_basis: text(1000), terms: text(10000), vacancies: text(5000), notes: text(5000),
+});
+export type CrmCompanyInput = z.infer<typeof companySchema>;
 export const candidateSchema = z.object({
   id: z.string().uuid().optional(),
   full_name: text(120),
@@ -33,6 +44,10 @@ export const candidateSchema = z.object({
   resume_name: text(),
   file_hash: text(64),
   processing_status: z.enum(["Ready", "Needs review", "Manual entry"]).default("Manual entry"),
+  recruitment_status: z.enum(recruitmentStatuses).default("Looking for job"),
+  source: text(), desired_job: text(1000), arrived_on: optionalDate, interview_on: optionalDate,
+  placed_on: optionalDate, placement_company: text(), partner_id: z.string().uuid().nullable().default(null),
+  salary_package: text(), offer_path: text(300), offer_name: text(), notes: text(5000),
 });
 export type DeskCandidateInput = z.infer<typeof candidateSchema>;
 export const itemSchema = z.object({
@@ -76,6 +91,8 @@ export const searchSchema = z.object({
   uploadedAfter: z.string().optional(),
   sort: z.enum(["newest", "name", "experience"]).default("newest"),
   page: z.number().int().min(0).default(0),
+  status: z.union([z.enum(recruitmentStatuses), z.literal("")]).default(""),
+  resumesOnly: z.boolean().default(false),
 });
 export function identityKeys(email: string, phone: string) {
   return {

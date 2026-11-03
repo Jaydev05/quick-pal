@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { candidateSchema, itemSchema, callSchema, searchSchema, identityKeys } from "./desk";
+import { candidateSchema, companySchema, itemSchema, callSchema, searchSchema, identityKeys } from "./desk";
 
 const idSchema = z.object({ id: z.string().uuid() });
 async function authorize(context: {
@@ -92,11 +92,13 @@ export const deskCandidates = createServerFn({ method: "POST" })
     let query = context.supabase
       .from("desk_candidates")
       .select(
-        "id,full_name,phone,email,education,specialization,college,skills,experience_years,designation,company,location,preferred_location,summary,keywords,resume_path,resume_name,processing_status,created_at,updated_at",
+        "id,full_name,phone,email,education,specialization,college,skills,experience_years,designation,company,location,preferred_location,summary,keywords,resume_path,resume_name,processing_status,created_at,updated_at,recruitment_status,source,desired_job,arrived_on,interview_on,placed_on,placement_company,partner_id,salary_package,offer_path,offer_name,notes",
         { count: "exact" },
       );
     if (data.q)
       query = query.textSearch("search_vector", data.q, { type: "websearch", config: "english" });
+    if (data.status) query = query.eq("recruitment_status", data.status);
+    if (data.resumesOnly) query = query.neq("resume_path", "");
     for (const key of ["education", "specialization", "skills", "location", "designation"] as const)
       if (data[key]) query = query.ilike(key, `%${data[key].replace(/[%_]/g, "\\$&")}%`);
     if (data.min !== undefined) query = query.gte("experience_years", data.min);
@@ -140,6 +142,8 @@ export const deskSaveCandidate = createServerFn({ method: "POST" })
     await authorize(context);
     if (data.resume_path && !data.resume_path.startsWith(`${context.userId}/`))
       throw new Error("Invalid private resume reference.");
+    if (data.offer_path && !data.offer_path.startsWith(`${context.userId}/`))
+      throw new Error("Invalid private offer-letter reference.");
     const keys = identityKeys(data.email, data.phone);
     const { id, ...fields } = data;
     const record = { ...fields, email: keys.email, email_key: keys.email, phone_key: keys.phone };
