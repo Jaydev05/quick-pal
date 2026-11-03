@@ -9,9 +9,31 @@ import {
   taskStatuses,
   callOutcomes,
   interests,
+  candidateSchema,
+  companySchema,
+  recruitmentStatuses,
+  searchSchema,
 } from "./desk";
 import { profileFromText } from "./desk-resume";
 describe("desk business rules", () => {
+  it("keeps four candidate recruitment states", () => expect(recruitmentStatuses).toEqual(["Looking for job", "In process", "Placed", "Not placed"]));
+  it("allows a candidate without arrival, interview, salary, resume or offer letter", () => {
+    const row = candidateSchema.parse({ full_name: "Test Candidate", education: "10th" });
+    expect([row.arrived_on, row.interview_on, row.placed_on]).toEqual([null, null, null]);
+    expect([row.resume_path, row.offer_path, row.salary_package]).toEqual(["", "", ""]);
+  });
+  it("accepts all education levels without engineering restrictions", () => {
+    for (const education of ["10th", "12th", "ITI", "Pharma", "M.Tech Mechanical Engineering"]) expect(candidateSchema.parse({ education }).education).toBe(education);
+  });
+  it("records negotiated commission without inventing a default", () => {
+    expect(companySchema.parse({ name: "Partner" }).commission_percent).toBe(null);
+    expect(companySchema.parse({ name: "Partner", commission_percent: 12.5 }).commission_percent).toBe(12.5);
+    expect(companySchema.safeParse({ name: "Partner", commission_percent: 101 }).success).toBe(false);
+  });
+  it("permits resume-only searches and exact placement status filters", () => {
+    expect(searchSchema.parse({ resumesOnly: true, status: "Placed" }).resumesOnly).toBe(true);
+    expect(searchSchema.safeParse({ status: "Rejected" }).success).toBe(false);
+  });
   it("allows precisely the four requested priorities", () =>
     expect(priorities).toEqual(["Low", "Medium", "High", "Urgent"]));
   it("allows the three task statuses", () =>
