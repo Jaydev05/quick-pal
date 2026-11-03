@@ -11,11 +11,19 @@ import {
   interests,
   candidateSchema,
   companySchema,
+  createCompanyDraft,
   recruitmentStatuses,
   searchSchema,
 } from "./desk";
 import { profileFromText } from "./desk-resume";
 describe("desk business rules", () => {
+  it("opens a blank company draft but requires a name before saving", () => {
+    const draft = createCompanyDraft();
+    expect(draft.name).toBe("");
+    expect(draft.commission_percent).toBe(null);
+    expect(companySchema.safeParse(draft).success).toBe(false);
+    expect(companySchema.parse({ ...draft, name: "Partner company" }).name).toBe("Partner company");
+  });
   it("keeps four candidate recruitment states", () => expect(recruitmentStatuses).toEqual(["Looking for job", "In process", "Placed", "Not placed"]));
   it("allows a candidate without arrival, interview, salary, resume or offer letter", () => {
     const row = candidateSchema.parse({ full_name: "Test Candidate", education: "10th" });

@@ -23,6 +23,10 @@ export const companySchema = z.object({
   commission_basis: text(1000), terms: text(10000), vacancies: text(5000), notes: text(5000),
 });
 export type CrmCompanyInput = z.infer<typeof companySchema>;
+export function createCompanyDraft(): CrmCompanyInput {
+  // A new form starts blank; required-name validation belongs to saving.
+  return { ...companySchema.omit({ name: true }).parse({}), name: "" };
+}
 export const candidateSchema = z.object({
   id: z.string().uuid().optional(),
   full_name: text(120),

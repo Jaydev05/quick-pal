@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Fix CRM Add company opening and verify required-name validation remains enforced when saving.
+
 - [x] Simplify /desk into /crm with resume search, candidate placement records, partner companies, and tasks/reminders while preserving existing private data.
 - [x] Verify new CRM schema, 29 business/access tests, successful compile, secure /crm gate, /desk redirect, and unchanged homepage without runtime errors.
 - [ ] Verify CRM saving, document uploads and desktop/mobile layout after the super admin completes OTP sign-in; the available preview session is not OTP-verified.
