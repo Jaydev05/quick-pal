@@ -1,13 +1,13 @@
 # Roadmap
 
-- [ ] Simplify /desk into /crm with resume search, candidate placement records, partner companies, and tasks/reminders while preserving existing private data.
-- [ ] Verify CRM rules, security, saved data and desktop/mobile layout; OTP-required checks must use a verified super-admin session.
+- [x] Simplify /desk into /crm with resume search, candidate placement records, partner companies, and tasks/reminders while preserving existing private data.
+- [x] Verify new CRM schema, 29 business/access tests, successful compile, secure /crm gate, /desk redirect, and unchanged homepage without runtime errors.
+- [ ] Verify CRM saving, document uploads and desktop/mobile layout after the super admin completes OTP sign-in; the available preview session is not OTP-verified.
 
 - [x] Build the super-admin-only /desk overview, tasks, candidate calls, follow-ups, calendar, activity history and reports.
 - [x] Add private bulk resume storage, editable extracted profiles, duplicate safeguards and combined candidate search filters.
 - [x] Verify /desk rules, applied security policies, signed-out and unverified-super-admin denial; 24 tests pass and the homepage still opens.
 - [x] Verify local extraction in a real browser with PDF, DOCX and scanned-PDF sample resumes; searchable content and email extraction pass without AI calls.
-- [ ] Verify desk saving, bulk upload and desktop/mobile screens after the super admin completes OTP sign-in (minted sessions intentionally lack OTP verification).
 
 - [x] Show clear employee password validation messages without raw error details; validation tests pass.
 - [x] Remove the candidate-view shortcut for employee administrators; checked in an active employee session.
