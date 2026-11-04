@@ -51,3 +51,4 @@
 - [x] Save the professional summary and show the completed profile to the administrator.
 - [ ] Verify resume autofill from both profile and job-application uploads.
 - [x] Send the two branded SOFTCON interview emails from info@jaydevassociates.com to omdoshi45@gmail.com.
+- [x] CRM: delete candidate, Placed list, Groq resume extraction, new WhatsApp link
