@@ -270,3 +270,30 @@ export const deskAiResume = createServerFn({ method: "POST" })
     const { groqResumeProfile } = await import("./groq-resume.server");
     return groqResumeProfile(data.text);
   });
+
+// One resume per request keeps costs bounded and lets the caller stop between records.
+export const deskRepairResume = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(idSchema.extend({ text: z.string().max(60000).optional() }))
+  .handler(async ({ data, context }) => {
+    await authorize(context);
+    const { data: row, error } = await context.supabase.from("desk_candidates").select("id,extracted_text,file_hash,resume_path,updated_at").eq("id", data.id).single();
+    if (error || !row?.resume_path) return { status: "failed" as const, message: "No resume is attached." };
+    const text = data.text || row.extracted_text;
+    if (text.trim().length < 20) return { status: "unreadable" as const, message: "This resume needs text extraction or manual review." };
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`crm-profile-v2:${text}`));
+    const hash = Array.from(new Uint8Array(digest), n => n.toString(16).padStart(2, "0")).join("");
+    const { data: cached, error: cacheError } = await context.supabase.from("desk_activity").select("id").eq("entity_id", row.id).eq("action", "resume_enriched").eq("label", hash).limit(1);
+    if (cacheError) return { status: "failed" as const, message: "Could not check previous analysis." };
+    if (cached?.length) return { status: "cached" as const, message: "Already analysed." };
+    try {
+      const { groqResumeProfile } = await import("./groq-resume.server");
+      const { resumeProfilePatch } = await import("./crm-resume");
+      const patch = resumeProfilePatch(await groqResumeProfile(text));
+      if (!Object.keys(patch).length) return { status: "failed" as const, message: "No reliable details were found." };
+      const { data: saved, error: updateError } = await context.supabase.from("desk_candidates").update({ ...patch, extracted_text: text, processing_status: "Needs review" }).eq("id", row.id).eq("updated_at", row.updated_at).select("id").maybeSingle();
+      if (updateError || !saved) return { status: "failed" as const, message: "Record changed or could not be saved. Please review it." };
+      const { error: logError } = await context.supabase.from("desk_activity").insert({ entity_id: row.id, entity_type: "desk_candidates", action: "resume_enriched", label: hash, actor_id: context.userId });
+      return { status: "updated" as const, message: logError ? "Updated; analysis cache could not be recorded." : "Resume details updated." };
+    } catch (e) { return { status: "failed" as const, message: e instanceof Error ? e.message : "Resume analysis could not finish." }; }
+  });
