@@ -97,6 +97,7 @@ export const searchSchema = z.object({
   page: z.number().int().min(0).default(0),
   status: z.union([z.enum(recruitmentStatuses), z.literal("")]).default(""),
   resumesOnly: z.boolean().default(false),
+  placed: z.enum(["all", "only", "exclude"]).default("all"),
 });
 export function identityKeys(email: string, phone: string) {
   return {
