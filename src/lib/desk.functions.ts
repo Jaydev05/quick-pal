@@ -98,6 +98,8 @@ export const deskCandidates = createServerFn({ method: "POST" })
     if (data.q)
       query = query.textSearch("search_vector", data.q, { type: "websearch", config: "english" });
     if (data.status) query = query.eq("recruitment_status", data.status);
+    if (data.placed === "only") query = query.eq("recruitment_status", "Placed");
+    if (data.placed === "exclude") query = query.neq("recruitment_status", "Placed");
     if (data.resumesOnly) query = query.neq("resume_path", "");
     for (const key of ["education", "specialization", "skills", "location", "designation"] as const)
       if (data[key]) query = query.ilike(key, `%${data[key].replace(/[%_]/g, "\\$&")}%`);
@@ -258,4 +260,13 @@ export const deskResumeUrl = createServerFn({ method: "POST" })
       );
     if (urlError || !url) throw new Error("Resume could not be opened.");
     return { url: url.signedUrl };
+  });
+
+export const deskAiResume = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(z.object({ text: z.string().min(20).max(60000) }))
+  .handler(async ({ data, context }) => {
+    await authorize(context);
+    const { groqResumeProfile } = await import("./groq-resume.server");
+    return groqResumeProfile(data.text);
   });
