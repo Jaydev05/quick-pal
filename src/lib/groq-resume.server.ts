@@ -2,7 +2,7 @@ const FIELDS = ["full_name", "phone", "email", "designation", "company", "educat
 export type GroqResume = Partial<Record<(typeof FIELDS)[number], string>> & { experience_years?: number | null };
 
 export async function groqResumeProfile(text: string): Promise<GroqResume> {
-  const key = process.env.GROQ_API_KEY;
+  const key = process.env['GROQ_API_KEY'];
   if (!key) return {};
   try {
     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
