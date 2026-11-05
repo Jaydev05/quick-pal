@@ -1,4 +1,4 @@
-import { candidateSchema, type DeskCandidateInput } from "./desk";
+import { candidateSchema, identityKeys, type DeskCandidateInput } from "./desk";
 
 export const resumeProfileFields = ["full_name", "phone", "email", "designation", "company", "education", "specialization", "college", "skills", "location", "summary", "experience_years"] as const;
 export function resumeProfilePatch(value: Record<string, unknown>): Partial<DeskCandidateInput> {
@@ -16,4 +16,10 @@ export function resumeProfilePatch(value: Record<string, unknown>): Partial<Desk
 export function experienceLabel(years: number | null, designation: string) {
   const experience = years === null ? "Experience not recorded" : years === 0 ? "Fresher" : `${years} ${years === 1 ? "year" : "years"} experience`;
   return [experience, designation].filter(Boolean).join(" · ");
+}
+export function resumeIdentityPatch(patch: Partial<DeskCandidateInput>) {
+  return {
+    ...(patch.email !== undefined ? { email: identityKeys(patch.email, "").email, email_key: identityKeys(patch.email, "").email } : {}),
+    ...(patch.phone !== undefined ? { phone_key: identityKeys("", patch.phone).phone } : {}),
+  };
 }

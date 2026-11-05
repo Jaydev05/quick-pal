@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { experienceLabel, resumeProfilePatch } from "./crm-resume";
+import { experienceLabel, resumeProfilePatch, resumeIdentityPatch } from "./crm-resume";
 describe("CRM resume corrections", () => {
+  it("keeps corrected contacts normalized for duplicate detection", () => {
+    expect(resumeIdentityPatch({ email: " Candidate@Example.com ", phone: "+91 7744975512" })).toEqual({ email: "candidate@example.com", email_key: "candidate@example.com", phone_key: "7744975512" });
+    expect(resumeIdentityPatch({ education: "10th" })).toEqual({});
+  });
   it("never changes placement, status, notes or document references from resume output", () => {
     expect(resumeProfilePatch({ full_name: "Candidate", recruitment_status: "Placed", placement_company: "Wrong", notes: "Wrong", resume_path: "other/file" })).toEqual({ full_name: "Candidate" });
   });

@@ -1,8 +1,9 @@
 # Roadmap
 
-- [ ] Fix private CRM resume preview, improve candidate rows, and provide cached Groq repair of existing resume data; verify authenticated flow where available.
+- [x] Add in-app private CRM document previews, requested candidate rows, and stoppable cached Groq correction controls; helper tests and build pass.
+- [ ] Run corrections on stored resumes and verify private document previews in the actual CRM; requires the super admin's OTP-verified session.
 
-- [ ] Fix CRM Add company opening and verify required-name validation remains enforced when saving.
+- [x] Fix CRM Add company opening; draft and required-name saving validation pass tests.
 
 - [x] Simplify /desk into /crm with resume search, candidate placement records, partner companies, and tasks/reminders while preserving existing private data.
 - [x] Verify new CRM schema, 29 business/access tests, successful compile, secure /crm gate, /desk redirect, and unchanged homepage without runtime errors.

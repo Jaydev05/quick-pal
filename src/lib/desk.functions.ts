@@ -306,10 +306,11 @@ export const deskRepairResume = createServerFn({ method: "POST" })
     if (cached?.length) return { status: "cached" as const, message: "Already analysed." };
     try {
       const { groqResumeProfile } = await import("./groq-resume.server");
-      const { resumeProfilePatch } = await import("./crm-resume");
+      const { resumeProfilePatch, resumeIdentityPatch } = await import("./crm-resume");
       const patch = resumeProfilePatch(await groqResumeProfile(text));
       if (!Object.keys(patch).length) return { status: "failed" as const, message: "No reliable details were found." };
-      const { data: saved, error: updateError } = await context.supabase.from("desk_candidates").update({ ...patch, extracted_text: text, processing_status: "Needs review" }).eq("id", row.id).eq("updated_at", row.updated_at).select("id").maybeSingle();
+      const { data: saved, error: updateError } = await context.supabase.from("desk_candidates").update({ ...patch, ...resumeIdentityPatch(patch), extracted_text: text, processing_status: "Needs review" }).eq("id", row.id).eq("updated_at", row.updated_at).select("id").maybeSingle();
+      if (updateError?.code === "23505") return { status: "failed" as const, message: "These contact details belong to another candidate. Please review both records." };
       if (updateError || !saved) return { status: "failed" as const, message: "Record changed or could not be saved. Please review it." };
       const { error: logError } = await context.supabase.from("desk_activity").insert({ entity_id: row.id, entity_type: "desk_candidates", action: "resume_enriched", label: hash, actor_id: context.userId });
       return { status: "updated" as const, message: logError ? "Updated; analysis cache could not be recorded." : "Resume details updated." };
