@@ -271,6 +271,24 @@ export const deskAiResume = createServerFn({ method: "POST" })
     return groqResumeProfile(data.text);
   });
 
+// Read the authorized record first; privileged storage access avoids signing/proxy failures.
+export const deskDocument = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(idSchema.extend({ offer: z.boolean().default(false) }))
+  .handler(async ({ data, context }) => {
+    await authorize(context);
+    const { data: row, error } = await context.supabase.from("desk_candidates")
+      .select("resume_path,resume_name,offer_path,offer_name,extracted_text").eq("id", data.id).single();
+    const path = data.offer ? row?.offer_path : row?.resume_path;
+    if (error || !row || !path) throw new Error("No document is attached.");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: file, error: fileError } = await supabaseAdmin.storage.from("desk-resumes").download(path);
+    if (fileError || !file) throw new Error("Document could not be read. Please retry.");
+    if (file.size > 10 * 1024 * 1024) throw new Error("This document is too large to preview.");
+    const { Buffer } = await import("node:buffer");
+    return { base64: Buffer.from(await file.arrayBuffer()).toString("base64"), name: (data.offer ? row.offer_name : row.resume_name) || path.split("/").pop() || "document.pdf", text: data.offer ? "" : row.extracted_text };
+  });
+
 // One resume per request keeps costs bounded and lets the caller stop between records.
 export const deskRepairResume = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -288,10 +306,11 @@ export const deskRepairResume = createServerFn({ method: "POST" })
     if (cached?.length) return { status: "cached" as const, message: "Already analysed." };
     try {
       const { groqResumeProfile } = await import("./groq-resume.server");
-      const { resumeProfilePatch } = await import("./crm-resume");
+      const { resumeProfilePatch, resumeIdentityPatch } = await import("./crm-resume");
       const patch = resumeProfilePatch(await groqResumeProfile(text));
       if (!Object.keys(patch).length) return { status: "failed" as const, message: "No reliable details were found." };
-      const { data: saved, error: updateError } = await context.supabase.from("desk_candidates").update({ ...patch, extracted_text: text, processing_status: "Needs review" }).eq("id", row.id).eq("updated_at", row.updated_at).select("id").maybeSingle();
+      const { data: saved, error: updateError } = await context.supabase.from("desk_candidates").update({ ...patch, ...resumeIdentityPatch(patch), extracted_text: text, processing_status: "Needs review" }).eq("id", row.id).eq("updated_at", row.updated_at).select("id").maybeSingle();
+      if (updateError?.code === "23505") return { status: "failed" as const, message: "These contact details belong to another candidate. Please review both records." };
       if (updateError || !saved) return { status: "failed" as const, message: "Record changed or could not be saved. Please review it." };
       const { error: logError } = await context.supabase.from("desk_activity").insert({ entity_id: row.id, entity_type: "desk_candidates", action: "resume_enriched", label: hash, actor_id: context.userId });
       return { status: "updated" as const, message: logError ? "Updated; analysis cache could not be recorded." : "Resume details updated." };
