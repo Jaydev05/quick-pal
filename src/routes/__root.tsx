@@ -83,6 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "google-site-verification", content: "0SAmOt1uKe6Ixt0aY0bXVejfu4IfKlC5XXxBvuNGrFU" },
       { title: "Jaydev Associates — Recruitment, Security & Facility Services" },
       {
         name: "description",
