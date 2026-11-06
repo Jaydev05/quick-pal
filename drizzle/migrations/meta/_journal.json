@@ -43,6 +43,13 @@
       "when": 1793873203691,
       "tag": "0005_tighten_settings_and_enquiries",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793969742540,
+      "tag": "0006_restrict_job_poster_reads",
+      "breakpoints": true
     }
   ]
 }
